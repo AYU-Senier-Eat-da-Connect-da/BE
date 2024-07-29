@@ -5,12 +5,17 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class President {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +27,6 @@ public class President {
     private String presidentPassword;
     private String presidentNumber;
 
-    @OneToOne(mappedBy = "president", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private Restaurant restaurant;
+    @OneToMany(mappedBy = "president", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Restaurant> restaurant = new ArrayList<>();
 }
