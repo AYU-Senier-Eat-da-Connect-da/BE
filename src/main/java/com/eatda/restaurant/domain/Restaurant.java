@@ -39,4 +39,11 @@ public class Restaurant {
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviews;
+
+    public void updateRestaurant(String restaurantName, String restaurantAddress, String restaurantNumber, String restaurantBody) {
+        this.restaurantName = restaurantName;
+        this.restaurantAddress = restaurantAddress;
+        this.restaurantNumber = restaurantNumber;
+        this.restaurantBody = restaurantBody;
+    }
 }
