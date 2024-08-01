@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,7 +21,8 @@ import java.util.List;
 public class Child {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "child_id")
+    private Long childId;
 
     private String childName;
     private String childEmail;
@@ -40,6 +42,6 @@ public class Child {
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "child")
-    private List<Book> books;
+    private List<Book> books = new ArrayList<>();
 
 }
