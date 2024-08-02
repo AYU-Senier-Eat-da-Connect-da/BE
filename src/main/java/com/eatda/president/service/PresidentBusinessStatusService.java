@@ -1,8 +1,7 @@
 package com.eatda.president.service;
 
-import com.eatda.president.domain.PresidentBusinessRequest;
-import com.eatda.president.domain.PresidentBusinessResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.eatda.president.dto.PresidentBusinessRequest;
+import com.eatda.president.dto.PresidentBusinessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;

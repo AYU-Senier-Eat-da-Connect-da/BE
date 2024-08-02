@@ -1,7 +1,7 @@
 package com.eatda.president.controller;
 
-import com.eatda.president.domain.PresidentBusinessRequest;
-import com.eatda.president.domain.PresidentBusinessResponse;
+import com.eatda.president.dto.PresidentBusinessRequest;
+import com.eatda.president.dto.PresidentBusinessResponse;
 import com.eatda.president.service.PresidentBusinessStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

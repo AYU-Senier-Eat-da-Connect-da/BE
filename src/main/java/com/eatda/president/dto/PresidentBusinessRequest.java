@@ -1,4 +1,4 @@
-package com.eatda.president.domain;
+package com.eatda.president.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
