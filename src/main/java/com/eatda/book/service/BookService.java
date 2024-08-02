@@ -1,7 +1,8 @@
 package com.eatda.book.service;
 
 import com.eatda.book.domain.Book;
-import com.eatda.book.domain.BookMenu;
+import com.eatda.book.form.BookRequestDTO;
+import com.eatda.book.form.BookResponseDTO;
 import com.eatda.book.repository.BookRepository;
 import com.eatda.child.domain.Child;
 import com.eatda.child.repository.ChildRepository;
@@ -11,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -26,35 +26,41 @@ public class BookService {
      * 예약 (주문)
      */
     @Transactional
-    public Long book(Long childId, Long menuId, int count){
+    public BookResponseDTO book(BookRequestDTO bookRequestDTO) {
+
+        Long childId = bookRequestDTO.getChildId();
+        Long menuId = bookRequestDTO.getMenuId();
+        int count = bookRequestDTO.getCount();
 
         //엔티티 조회
-        Child child = childRepository.findOne(childId);
-        Menu menu = menuRepository.findOne(menuId);
+        Optional<Child> child = childRepository.findById(childId);
+        Optional<Menu> menu = menuRepository.findById(menuId);
 
-        //예약 메뉴 생성
-        BookMenu bookMenu = BookMenu.createBookMenu(menu, menu.getPrice(), count);
+        if (child.isEmpty() || menu.isEmpty()) {
+            throw new RuntimeException("Child or Menu not found");
+        }
 
         //예약 생성
-        Book book = Book.createBook(child, bookMenu);
+        Book book = Book.createBook(child.get(), menu.get(), count);
 
         //예약 저장
-        bookRepository.save(book);
+        Book savedBook = bookRepository.save(book);
 
-        return book.getBookId();
+        // 응답 DTO 생성
+        return BookResponseDTO.builder()
+                .bookId(savedBook.getBookId())
+                .totalPrice(savedBook.getTotalPrice())
+                .build();
     }
 
 
     /**
-     * Todo: 전체 주문 가격 조회
-     *
-    public int getTotalPrice() {
-        int totalPrice = 0;
-
-        for (BookMenu bookMenu : ) {
-            totalPrice += bookMenu.getTotalPrice();
-        }
-        return totalPrice;
-    }
+     * 전체 주문 가격 조회
      */
+    @Transactional(readOnly = true)
+    public int getTotalPrice(Long bookId) {
+        Optional<Book> book = bookRepository.findById(bookId);
+        return book.map(Book::getTotalPrice).orElse(0);
+    }
+
 }

@@ -39,9 +39,8 @@ public class Child {
     private Sponsor sponsor;
 
     @OneToMany(mappedBy = "child")
-    private List<Review> reviews;
+    private List<Review> reviews = new ArrayList<>();;
 
     @OneToMany(mappedBy = "child")
     private List<Book> books = new ArrayList<>();
-
 }

@@ -17,39 +17,47 @@ import lombok.NoArgsConstructor;
 public class Menu {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "menu_id")
-    private Long menuId;
+    private Long id;
 
-    private String menuName;    //메뉴명
-    private String menuBody;    //메뉴 설명
-    private int price;  //메뉴 가격
+    private String menuName;
+    private String menuBody;
 
-    private int stockQuantity;  // 재고
+//    Todo: 품절여부 삭제 후 음식수량으로 바꿈.
+//    private Boolean menuStatus;
 
-    //Todo: 메뉴 품절여부
-    private Boolean menuStatus;
+    private int price;
+    private int stockQuantity;  //음식 수량
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
+    @JsonBackReference //순환참조 방지
     private Restaurant restaurant;
 
-    /**
-     * 상품 재고 증가
-     */
 
-    public void addStock (int quantity){
+    public void updateMenu(String menuName, String menuBody, int price, int stockQuantity) {
+        this.menuName = menuName;
+        this.menuBody = menuBody;
+        this.stockQuantity = stockQuantity;
+        this.price = price;
+    }
+
+    /**
+     * 음식 수량 증가
+     */
+    public void addStock(int quantity) {
         this.stockQuantity += quantity;
     }
 
     /**
-     * 상품 재고 감소
+     * 음식 수량 감소
      */
-    public void removeStock (int quantity) {
+    public void removeStock(int quantity) {
         int restStock = this.stockQuantity - quantity;
-        if (restStock < 0) {
+
+        if (restStock < 0){
             throw new NotEnoughStockException("need more stock");
         }
         this.stockQuantity = restStock;
     }
-
 }
+

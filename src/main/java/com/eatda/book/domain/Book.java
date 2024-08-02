@@ -1,6 +1,7 @@
 package com.eatda.book.domain;
 
 import com.eatda.child.domain.Child;
+import com.eatda.menu.domain.Menu;
 import com.eatda.restaurant.domain.Restaurant;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +10,11 @@ import org.thymeleaf.standard.inline.StandardHTMLInliner;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
@@ -29,31 +35,32 @@ public class Book {
     @JoinColumn(name = "child_id")
     private Child child;
 
-    @OneToMany(mappedBy = "book")
-    private List<BookMenu> bookMenus = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "menu_id")
+    private Menu menu;
 
+    private int count; // 예약 수량
     private LocalDateTime localDateTime;
 
+
     //==예약 생성 메서드==//
-    public static Book createBook(Child child, BookMenu... bookMenus) {
-        Book book = new Book();
-
-        book.setChild(child);
-        for (BookMenu bookMenu : bookMenus){
-            book.addBookMenu(bookMenu);
-        }
-        return book;
+    public static Book createBook(Child child, Menu menu, int count) {
+        return Book.builder()
+                .child(child)
+                .menu(menu)
+                .count(count)
+                .localDateTime(LocalDateTime.now())
+                .build();
     }
 
-    //연관관계 메서드
-    public void setChild(Child child) {
-        this.child = child;
-        child.getBooks().add(this);
+
+    // 전체 가격 메서드
+    public int getTotalPrice() {
+        return menu.getPrice() * count;
     }
 
-    public void addBookMenu(BookMenu bookMenu){
-        bookMenus.add(bookMenu);
-        bookMenu.setBook(this);
+    // 메뉴를 통해 레스토랑을 가져오는 메서드
+    public Restaurant getRestaurant() {
+        return menu.getRestaurant();
     }
-
 }
