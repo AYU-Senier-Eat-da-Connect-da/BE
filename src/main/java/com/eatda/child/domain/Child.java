@@ -28,8 +28,8 @@ public class Child {
     private String childNumber;
     private String childAddress;
 
-    @OneToOne
-    @JoinColumn(name = "card_id")
+    @ManyToOne
+    @JoinColumn(name = "card_id", unique = true)
     private Card card;
 
     @OneToOne
@@ -42,4 +42,7 @@ public class Child {
     @OneToMany(mappedBy = "child")
     private List<Book> books;
 
+    public void setSponsor(Sponsor sponsor) {
+        this.sponsor = sponsor;
+    }
 }
