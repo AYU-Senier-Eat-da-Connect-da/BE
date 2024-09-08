@@ -2,6 +2,8 @@ package com.eatda.menu.domain;
 
 import com.eatda.restaurant.domain.Restaurant;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,5 +27,6 @@ public class Menu {
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
+    @JsonIgnore  // 직렬화에서 완전히 무시
     private Restaurant restaurant;
 }
