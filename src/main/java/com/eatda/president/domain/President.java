@@ -11,11 +11,14 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static lombok.AccessLevel.PRIVATE;
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor(access = PRIVATE)
 public class President {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,5 +31,6 @@ public class President {
     private String presidentNumber;
 
     @OneToMany(mappedBy = "president", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference  // Restaurant에서의 순환 참조 방지
     private List<Restaurant> restaurant = new ArrayList<>();
 }

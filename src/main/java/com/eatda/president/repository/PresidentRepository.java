@@ -1,4 +1,14 @@
 package com.eatda.president.repository;
 
-public interface PresidentRepository {
+import com.eatda.president.domain.President;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface PresidentRepository extends JpaRepository<President, Long> {
+    // 예외 발생 < 존재하지 않는 사용자 처리(반환 유형에 Optional 사용)
+    Optional<President> findByPresidentEmail(String presidentEmail);
+
 }

@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -32,9 +31,11 @@ public class Restaurant {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="president_id")
+    @JsonBackReference  // President의 restaurant 필드와 순환 참조를 방지
     private President president;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference // Menu와의 관계에서 관리되는 참조로 표시
     private List<Menu> menus;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
