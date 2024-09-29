@@ -5,7 +5,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Collection;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -45,7 +44,8 @@ public class JwtProvider {
 
         // 클레임에서 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities = List.of(claims.get("auth").toString().split(","))
-                .stream().map(SimpleGrantedAuthority::new)
+                .stream()
+                .map(SimpleGrantedAuthority::new)
                 .toList();
 
         // UserDetails 객체를 만들어서 Authentication return
@@ -53,10 +53,15 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
+    /** 토큰 만료 시간 반환 */
+    public Date getExpirationDate(String token) {
+        Claims claims = parseClaims(token);
+        return claims.getExpiration();
+    }
     /**
      * token 검증 메서드
      * @param token
-     * @return T/F
+     * @return 잘못된 토큰일 경우: F
      */
     public boolean validateToken(String token) {
         try {
@@ -66,7 +71,7 @@ public class JwtProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException e) {
-            log.info("Invalid JWT Token", e);
+            log.info("잘못된 JWT 토큰입니다.", e);
             return false;
         }
     }
@@ -83,5 +88,4 @@ public class JwtProvider {
             return e.getClaims();
         }
     }
-
 }

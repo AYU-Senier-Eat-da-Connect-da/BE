@@ -25,21 +25,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                // Disable basic auth and CSRF protection for REST APIs
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                // Set stateless session management since we're using JWT
                 .sessionManagement(sessionManagementConfigurer ->
                         sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        // Allow all requests to specific signup and signin endpoints
-                        .requestMatchers("/jwt-login/join/**", "/jwt-login/login/**").permitAll() // 엔드포인트 추가
-                        // Require authentication for all other requests
+                        .requestMatchers("/api/jwt-login/join/**", "/api/jwt-login/login/**", "/api/jwt-logout/**").permitAll() // 엔드포인트 추가
                         .anyRequest().authenticated())
-                // Add JWT authentication filter before the UsernamePasswordAuthenticationFilter
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
 }
