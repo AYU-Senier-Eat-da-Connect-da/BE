@@ -1,4 +1,7 @@
 package com.eatda.restaurant.repository;
 
-public interface RestaurantRepository {
+import com.eatda.restaurant.domain.Restaurant;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 }
