@@ -1,7 +1,7 @@
 package com.eatda.child.domain;
 
 import com.eatda.card.domain.Card;
-import com.eatda.book.domain.Book;
+import com.eatda.order.domain.Order;
 import com.eatda.review.domain.Review;
 import com.eatda.sponsor.domain.Sponsor;
 import jakarta.persistence.*;
@@ -40,6 +40,6 @@ public class Child {
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "child")
-    private List<Book> books;
+    private List<Order> orders;
 
 }
