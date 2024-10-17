@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -17,13 +18,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Table(name = "orders")
 public class Order {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "book_id")
+    @Column(name = "order_id")
     private Long id;
 
-    private LocalDate orderTime;
+    private LocalDateTime orderTime;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
@@ -32,10 +34,6 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "child_id")
     private Child child;
-
-    @ManyToOne
-    @JoinColumn(name = "menu_id")
-    private Menu menu;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<MenuOrder> menuOrders; // 주문에 포함된 메뉴 목록

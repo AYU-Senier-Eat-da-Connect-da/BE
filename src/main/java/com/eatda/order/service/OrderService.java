@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +36,7 @@ public class OrderService {
         주문 생성 (아동이 주문)
      */
     @Transactional
-    public List<OrderResponseDTO> createOrder(OrderRequestDTO orderRequestDTO) {
+    public OrderResponseDTO createOrder(OrderRequestDTO orderRequestDTO) {
         Optional<Child> childOptional = childRepository.findById(orderRequestDTO.getChildId());
         if (childOptional.isPresent()) {
             Child child = childOptional.get();
@@ -44,69 +45,80 @@ public class OrderService {
             if (restaurantOptional.isPresent()) {
                 Restaurant restaurant = restaurantOptional.get();
 
-                List<OrderResponseDTO> orderResponses = new ArrayList<>();
-                for (OrderRequestDTO.MenuOrder menuOrder : orderRequestDTO.getMenuOrders()) {
-                    Optional<Menu> menuOptional = menuRepository.findById(menuOrder.getMenuId());
+                // Order 객체 생성
+                Order order = Order.builder()
+                        .child(child)
+                        .restaurant(restaurant)
+                        .orderTime(LocalDateTime.now())
+                        .menuOrders(new ArrayList<>()) // 빈 리스트로 초기화
+                        .build();
+
+                // MenuOrder 리스트 생성
+                for (OrderRequestDTO.MenuOrder menuOrderRequest : orderRequestDTO.getMenuOrders()) {
+                    Optional<Menu> menuOptional = menuRepository.findById(menuOrderRequest.getMenuId());
                     if (menuOptional.isPresent()) {
                         Menu menu = menuOptional.get();
 
-                        // MenuOrder 생성
+                        // MenuOrder 생성하고 order 설정
                         MenuOrder newMenuOrder = MenuOrder.builder()
                                 .menu(menu)
-                                .menuCount(menuOrder.getMenuCount())
+                                .menuCount(menuOrderRequest.getMenuCount())
+                                .order(order) // 여기서 직접 order 설정
                                 .build();
 
-                        // Order 생성
-                        Order order = Order.builder()
-                                .child(child)
-                                .restaurant(restaurant)
-                                .orderTime(LocalDate.now())
-                                .menuOrders(List.of(newMenuOrder)) // MenuOrder 리스트 추가
-                                .build();
-                        orderRepository.save(order);
-
-                        orderResponses.add(OrderResponseDTO.builder()
-                                .id(order.getId())
-                                .restaurantId(restaurant.getId())
-                                .childId(child.getId())
-                                .menuOrders(List.of(OrderResponseDTO.MenuOrder.builder()
-                                        .menuId(menu.getId())
-                                        .menuCount(newMenuOrder.getMenuCount())
-                                        .build()))
-                                .orderTime(order.getOrderTime())
-                                .build());
+                        order.getMenuOrders().add(newMenuOrder); // order에 MenuOrder 추가
                     } else {
                         throw new RuntimeException("메뉴를 찾을 수 없습니다.");
                     }
                 }
-                return orderResponses;
-            } else {
-                throw new RuntimeException("가게를 찾을 수 없습니다.");
-            }
-        } else {
-            throw new RuntimeException("아동을 찾을 수 없습니다.");
-        }
-    }
 
+                // Order 저장
+                orderRepository.save(order);
 
-    /*
-        주문받은 리스트로 전체 조회 (사장님 마이페이지 - 가게관리 - 들어온 주문 모두 보기)
-     */
-    public List<OrderResponseDTO> getOrderList(Long restaurantId) {
-        List<Order> orderList = orderRepository.findByRestaurantId(restaurantId); // 가게 ID로 주문 조회
+                // 가격 계산
+                int totalPrice = order.getMenuOrders().stream()
+                        .mapToInt(menuOrder -> menuOrder.getMenu().getPrice() * menuOrder.getMenuCount())
+                        .sum();
 
-        return orderList.stream()
-                .map(order -> OrderResponseDTO.builder()
+                return OrderResponseDTO.builder()
                         .id(order.getId())
-                        .restaurantId(order.getRestaurant().getId())
-                        .childId(order.getChild().getId())
-                        .menuOrders(order.getMenuOrders().stream() // MenuOrders로 변경
+                        .restaurantId(restaurant.getId())
+                        .childId(child.getId())
+                        .menuOrders(order.getMenuOrders().stream()
                                 .map(menuOrder -> OrderResponseDTO.MenuOrder.builder()
                                         .menuId(menuOrder.getMenu().getId())
                                         .menuCount(menuOrder.getMenuCount())
                                         .build())
                                 .collect(Collectors.toList()))
                         .orderTime(order.getOrderTime())
+                        .price(totalPrice)
+                        .build();
+            }
+        }
+        throw new RuntimeException("주문을 생성할 수 없습니다.");
+    }
+
+    /*
+        주문받은 리스트로 전체 조회 (사장님 마이페이지 - 가게관리 - 들어온 주문 모두 보기)
+     */
+    public List<OrderResponseDTO> getOrderListByRestaurantId(Long restaurantId) {
+        List<Order> orderList = orderRepository.findByRestaurantId(restaurantId);
+
+        return orderList.stream()
+                .map(order -> OrderResponseDTO.builder()
+                        .id(order.getId())
+                        .restaurantId(order.getRestaurant().getId())
+                        .childId(order.getChild().getId())
+                        .menuOrders(order.getMenuOrders().stream()
+                                .map(menuOrder -> OrderResponseDTO.MenuOrder.builder()
+                                        .menuId(menuOrder.getMenu().getId())
+                                        .menuCount(menuOrder.getMenuCount())
+                                        .build())
+                                .collect(Collectors.toList()))
+                        .orderTime(order.getOrderTime())
+                        .price(order.getMenuOrders().stream()
+                                .mapToInt(menuOrder -> menuOrder.getMenu().getPrice() * menuOrder.getMenuCount())
+                                .sum())
                         .build())
                 .collect(Collectors.toList());
     }
