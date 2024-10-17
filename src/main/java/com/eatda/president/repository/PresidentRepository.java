@@ -1,4 +1,7 @@
 package com.eatda.president.repository;
 
-public interface PresidentRepository {
+import com.eatda.president.domain.President;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PresidentRepository extends JpaRepository<President, Long> {
 }
