@@ -26,4 +26,11 @@ public class Menu {
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+
+    public void updateMenu(String menuName, String menuBody, boolean menuStatus, int price) {
+        this.menuName = menuName;
+        this.menuBody = menuBody;
+        this.menuStatus = menuStatus;
+        this.price = price;
+    }
 }

@@ -40,6 +40,6 @@ public class Review {
     @JoinColumn(name = "child_id")
     private Child child;
 
-    @OneToMany(mappedBy = "review")
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Picture> pictures;
 }
