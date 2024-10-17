@@ -4,16 +4,18 @@ import com.eatda.child.domain.Child;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class Sponsor {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long sponsor_id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String sponsorName;
     private String sponsorEmail;
@@ -22,4 +24,8 @@ public class Sponsor {
 
     @OneToOne(mappedBy = "sponsor", cascade = CascadeType.ALL)
     private Child child;
+
+    public void setChild(Child child) {
+        this.child = child;
+    }
 }
