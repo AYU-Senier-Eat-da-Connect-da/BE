@@ -11,10 +11,14 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static lombok.AccessLevel.PRIVATE;
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder
 @Getter
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor(access = PRIVATE)
 public class President {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

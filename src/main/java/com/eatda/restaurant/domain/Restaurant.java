@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Builder
 public class Restaurant {
 
     @Id

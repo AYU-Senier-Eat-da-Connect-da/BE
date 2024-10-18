@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Sponsor {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String sponsorName;
