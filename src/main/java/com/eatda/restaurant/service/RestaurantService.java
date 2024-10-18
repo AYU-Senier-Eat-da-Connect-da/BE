@@ -108,5 +108,4 @@ public class RestaurantService {
             throw new RuntimeException("Restaurant not found");
         }
     }
-
 }
