@@ -19,7 +19,7 @@ public class ReviewController {
     /*
         리뷰 작성
      */
-    @PostMapping("/{restaurantId}/addReview")
+    @PostMapping("/restaurant/{restaurantId}/addReview")
     public ResponseEntity<ReviewResponseDTO> addReview(
             @PathVariable Long restaurantId,
             @RequestBody ReviewRequestDTO reviewRequestDto,
@@ -34,7 +34,16 @@ public class ReviewController {
     }
 
     /*
-        특정 리뷰 조회
+        아동ID 별로 리뷰 리스트 조회
+     */
+    @GetMapping("/child/{childId}")
+    public ResponseEntity<List<ReviewResponseDTO>> getReviewListByChildId(@PathVariable Long childId) {
+        List<ReviewResponseDTO> reviews = reviewService.getReviewLIstByChildId(childId);
+        return ResponseEntity.ok(reviews);
+    }
+
+    /*
+        리뷰ID 별로 특정 리뷰 조회
      */
     @GetMapping("/{reviewId}")
     public ResponseEntity<ReviewResponseDTO> getReviewById(@PathVariable Long reviewId) {
@@ -43,7 +52,7 @@ public class ReviewController {
     }
 
     /*
-        특정 가게의 모든 리뷰 조회
+        음식점ID 별로 특정 가게의 모든 리뷰 조회
      */
     @GetMapping("/restaurant/{restaurantId}")
     public ResponseEntity<List<ReviewResponseDTO>> getReviewsByRestaurantId(@PathVariable Long restaurantId) {

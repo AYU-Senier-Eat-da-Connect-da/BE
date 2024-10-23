@@ -66,6 +66,18 @@ public class ReviewService {
         }
     }
 
+    // 아동Id에 해당하는 모든 리뷰 리스트 조회하기
+    public List<ReviewResponseDTO> getReviewLIstByChildId(Long childId) {
+        Child child = childRepository.findById(childId)
+                .orElseThrow(() -> new RuntimeException("아동을 찾을 수 없습니다."));
+
+        List<Review> reviewList = reviewRepository.findByChildId(childId);
+
+        return reviewList.stream()
+                .map(ReviewResponseDTO::toEntity)
+                .collect(Collectors.toList());
+    }
+
     // 리뷰Id로 조회하기
     public ReviewResponseDTO getReviewById(Long reviewId) {
         Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
@@ -85,7 +97,7 @@ public class ReviewService {
         }
     }
 
-    // restaurantId에 해당하는 모든 리뷰 리스트 조회하기
+    // 음식점Id에 해당하는 모든 리뷰 리스트 조회하기
     public List<ReviewResponseDTO> getReviewListByRestaurantId(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
