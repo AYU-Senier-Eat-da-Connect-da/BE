@@ -10,4 +10,5 @@ public class SponsorRequest {
     private String sponsorEmail;
     private String sponsorPassword;
     private String sponsorAddress;
+    private String sponsorNumber;
 }
