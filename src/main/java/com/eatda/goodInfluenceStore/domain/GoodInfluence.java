@@ -20,6 +20,6 @@ public class GoodInfluence {
     private String REFINE_LOTNO_ADDR;   // 정제지번주소
     private String DETAIL_ADDR; // 상세주소
     private String BSN_TM_NM;   // 영업시간
-    private String REFINE_WGS84_LAT;    // 위도
-    private String REFINE_WGS84_LOGT;   // 경도
+    private Double REFINE_WGS84_LAT;    // 위도
+    private Double REFINE_WGS84_LOGT;   // 경도
 }
