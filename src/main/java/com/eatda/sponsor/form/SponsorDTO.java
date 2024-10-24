@@ -17,6 +17,7 @@ public class SponsorDTO {
     private String sponsorName;
     private String sponsorEmail;
     private String sponsorAddress;
+    private String sponsorNumber;
     private ChildDTO child;
 
     public static SponsorDTO toEntity(Sponsor sponsor) {
@@ -38,6 +39,7 @@ public class SponsorDTO {
                 .sponsorName(sponsor.getSponsorName())
                 .sponsorEmail(sponsor.getSponsorEmail())
                 .sponsorAddress(sponsor.getSponsorAddress())
+                .sponsorNumber(sponsor.getSponsorAddress())
                 .child(childDTO)
                 .build();
     }

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -116,6 +117,7 @@ public class JwtLoginService {
                 .sponsorEmail(joinRequest.getSponsorEmail())
                 .sponsorPassword(hashedPassword) // 해시 처리된 비밀번호 사용
                 .sponsorAddress(joinRequest.getSponsorAddress())
+                .sponsorNumber(joinRequest.getSponsorNumber())
                 .build();
 
         sponsorRepository.save(newSponsor);
@@ -130,6 +132,39 @@ public class JwtLoginService {
         }
 
         return jwtGenerator.generateToken(sponsor.getId(), Collections.singletonList("ROLE_SPONSOR")).getAccessToken();
+    }
+
+    public String login(LoginRequest loginRequest) {
+        // 이메일로 President, Child, Sponsor 중 하나를 찾는다.
+        Optional<President> president = presidentRepository.findByPresidentEmail(loginRequest.getEmail());
+        if (president.isPresent()) {
+            President foundPresident = president.get();
+            if (!passwordEncoder.matches(loginRequest.getPassword(), foundPresident.getPresidentPassword())) {
+                throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+            }
+            return jwtGenerator.generateToken(foundPresident.getId(), Collections.singletonList("ROLE_PRESIDENT")).getAccessToken();
+        }
+
+        Optional<Child> child = childRepository.findByChildEmail(loginRequest.getEmail());
+        if (child.isPresent()) {
+            Child foundChild = child.get();
+            if (!passwordEncoder.matches(loginRequest.getPassword(), foundChild.getChildPassword())) {
+                throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+            }
+            return jwtGenerator.generateToken(foundChild.getId(), Collections.singletonList("ROLE_CHILD")).getAccessToken();
+        }
+
+        Optional<Sponsor> sponsor = sponsorRepository.findBySponsorEmail(loginRequest.getEmail());
+        if (sponsor.isPresent()) {
+            Sponsor foundSponsor = sponsor.get();
+            if (!passwordEncoder.matches(loginRequest.getPassword(), foundSponsor.getSponsorPassword())) {
+                throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+            }
+            return jwtGenerator.generateToken(foundSponsor.getId(), Collections.singletonList("ROLE_SPONSOR")).getAccessToken();
+        }
+
+        // 해당 이메일로 어떤 사용자도 찾지 못한 경우
+        throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
     }
 
 }

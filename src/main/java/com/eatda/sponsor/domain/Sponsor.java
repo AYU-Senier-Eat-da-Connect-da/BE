@@ -21,6 +21,7 @@ public class Sponsor {
     private String sponsorEmail;
     private String sponsorPassword;
     private String sponsorAddress;
+    private String sponsorNumber;
 
     @OneToOne(mappedBy = "sponsor", cascade = CascadeType.ALL)
     private Child child;
