@@ -87,4 +87,14 @@ public class JwtLoginController {
         }
     }
 
+    @PostMapping("login")
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+        try {
+            String token = jwtLoginService.login(loginRequest);
+            return ResponseEntity.ok(token);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
