@@ -108,4 +108,15 @@ public class RestaurantService {
             throw new RuntimeException("Restaurant not found");
         }
     }
+
+    public List<RestaurantDTO> findRestaurantsByPresidentId(Long presidentId) {
+        List<Restaurant> restaurants = restaurantRepository.findByPresidentId(presidentId);
+        List<RestaurantDTO> restaurantDTO = new ArrayList<>();
+
+        for(Restaurant restaurant : restaurants){
+            restaurantDTO.add(RestaurantDTO.toEntity(restaurant));
+        }
+
+        return restaurantDTO;
+    }
 }
