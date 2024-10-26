@@ -48,6 +48,7 @@ public class RestaurantService {
                     .restaurantAddress(restaurantEntity.getRestaurantAddress())
                     .restaurantNumber(restaurantEntity.getRestaurantNumber())
                     .restaurantBody(restaurantEntity.getRestaurantBody())
+                    .restaurantCategory(restaurantEntity.getRestaurantCategory())
                     .menus(menuDTOS)
                     .build();
         } else {
@@ -66,6 +67,7 @@ public class RestaurantService {
                     .restaurantAddress(restaurantDTO.getRestaurantAddress())
                     .restaurantNumber(restaurantDTO.getRestaurantNumber())
                     .restaurantBody(restaurantDTO.getRestaurantBody())
+                    .restaurantCategory(restaurantDTO.getRestaurantCategory())
                     .president(president)
                     .build();
 
@@ -87,7 +89,8 @@ public class RestaurantService {
                     restaurantDTO.getRestaurantName(),
                     restaurantDTO.getRestaurantAddress(),
                     restaurantDTO.getRestaurantNumber(),
-                    restaurantDTO.getRestaurantBody()
+                    restaurantDTO.getRestaurantBody(),
+                    restaurantDTO.getRestaurantCategory()
             );
 
             restaurantRepository.save(restaurant);

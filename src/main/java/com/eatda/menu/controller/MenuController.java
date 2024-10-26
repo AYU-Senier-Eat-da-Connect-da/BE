@@ -1,5 +1,6 @@
 package com.eatda.menu.controller;
 
+import com.eatda.login.security.JwtProvider;
 import com.eatda.menu.domain.Menu;
 import com.eatda.menu.domain.MenuDTO;
 import com.eatda.menu.service.MenuService;
@@ -27,7 +28,7 @@ public class MenuController {
         }
     }
 
-
+/*
     @PostMapping("/create")
     public ResponseEntity<MenuDTO> createMenu(@RequestBody MenuDTO menuDTO){
         MenuDTO createMenu = menuService.createMenu(menuDTO);
@@ -35,6 +36,17 @@ public class MenuController {
             return ResponseEntity.ok(createMenu);
         }
         return ResponseEntity.badRequest().build();
+    }
+    */
+    @PostMapping("/create/{presidentId}")
+    public ResponseEntity<MenuDTO> createMenu(@RequestBody MenuDTO menuDTO, @PathVariable Long presidentId) {
+        MenuDTO createdMenu = menuService.createMenu(menuDTO, presidentId);
+
+        if (createdMenu != null) {
+            return new ResponseEntity<>(createdMenu, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 해당 `presidentId`에 맞는 `restaurant`를 찾지 못한 경우
+            }
     }
 
     @PutMapping("/{menuId}/update")

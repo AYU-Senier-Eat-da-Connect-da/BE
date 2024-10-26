@@ -1,14 +1,12 @@
 package com.eatda.menu.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class MenuDTO {
     private Long id;
     private String menuName;
@@ -16,6 +14,14 @@ public class MenuDTO {
     private int price;
     private boolean menuStatus;
     private Long restaurantId;
+
+    public MenuDTO(Long id, String menuName, String menuBody, int price, Boolean menuStatus) {
+        this.id = id;
+        this.menuName = menuName;
+        this.menuBody = menuBody;
+        this.price = price;
+        this.menuStatus = menuStatus;
+    }
 
     public static MenuDTO toEntity(Menu menuEntity) {
         return MenuDTO.builder()

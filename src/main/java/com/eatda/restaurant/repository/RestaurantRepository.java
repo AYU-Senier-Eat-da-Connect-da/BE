@@ -4,6 +4,8 @@ import com.eatda.restaurant.domain.Restaurant;
 import com.eatda.restaurant.domain.RestaurantDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.Query;
 
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
@@ -13,4 +15,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     List<Restaurant> findByMenuNameContaining(String menuName);
 
     List<Restaurant> findByPresidentId(Long presidentId);
+
+    Optional<Restaurant> findFirstByPresidentId(Long presidentId);
 }

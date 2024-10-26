@@ -14,6 +14,7 @@ public class RestaurantDTO {
     private String restaurantAddress;
     private String restaurantNumber;
     private String restaurantBody;
+    private String restaurantCategory;
     private Long presidentId;
     private List<MenuDTO> menus;
 
@@ -24,6 +25,7 @@ public class RestaurantDTO {
                 .restaurantAddress(restaurantEntity.getRestaurantAddress())
                 .restaurantNumber(restaurantEntity.getRestaurantNumber())
                 .restaurantBody(restaurantEntity.getRestaurantBody())
+                .restaurantCategory(restaurantEntity.getRestaurantCategory())
                 .presidentId(restaurantEntity.getId())
                 .build();
     }

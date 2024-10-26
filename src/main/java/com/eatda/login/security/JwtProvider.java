@@ -88,4 +88,10 @@ public class JwtProvider {
             return e.getClaims();
         }
     }
+
+    // id값 추출
+    public Long getUserIdFromToken(String token) {
+        Claims claims = parseClaims(token);
+        return Long.parseLong(claims.getSubject()); // 보통 `sub`에 ID를 저장하는 경우
+    }
 }
