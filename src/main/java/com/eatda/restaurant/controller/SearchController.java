@@ -1,14 +1,18 @@
 package com.eatda.restaurant.controller;
 
+import com.eatda.restaurant.domain.RestaurantDTO;
 import com.eatda.restaurant.service.SearchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/restaurant/search/")
+@RequestMapping("/api/restaurant/search")
 public class SearchController {
 
     private final SearchService searchService;
@@ -29,5 +33,25 @@ public class SearchController {
     @GetMapping("/menu")
     public Map<String, Object> searchByMenuName(@RequestParam String menuName) {
         return searchService.searchByMenuName(menuName);
+    }
+
+    @GetMapping("/{searchText}")
+    public ResponseEntity<List<RestaurantDTO>> searchByText(@PathVariable String searchText){
+        List<RestaurantDTO> restaurants = searchService.searchByText(searchText);
+        if(restaurants!=null){
+            return new ResponseEntity<>(restaurants, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/category/{restaurantCategory}")
+    public ResponseEntity<List<RestaurantDTO>> searchByCategory(@PathVariable String restaurantCategory){
+        List<RestaurantDTO> restaurants = searchService.getRestaurantsByCategory(restaurantCategory);
+        if(restaurants!=null){
+            return new ResponseEntity<>(restaurants, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

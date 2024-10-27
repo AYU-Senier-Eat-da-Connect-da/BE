@@ -1,6 +1,7 @@
 package com.eatda.restaurant.service;
 
 import com.eatda.restaurant.domain.Restaurant;
+import com.eatda.restaurant.domain.RestaurantDTO;
 import com.eatda.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,5 +44,16 @@ public class SearchService {
             result.put("restaurants", restaurants);
         }
         return result;
+    }
+
+    public List<RestaurantDTO> searchByText(String searchText) {
+        return restaurantRepository.findByTextContaining(searchText);
+    }
+
+    public List<RestaurantDTO> getRestaurantsByCategory(String category) {
+        List<Restaurant> restaurants = restaurantRepository.findByRestaurantCategory(category);
+        return restaurants.stream()
+                .map(RestaurantDTO::new)
+                .collect(Collectors.toList());
     }
 }

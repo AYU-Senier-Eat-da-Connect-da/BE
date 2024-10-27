@@ -28,7 +28,9 @@ public class Restaurant {
     private String restaurantName;
     private String restaurantAddress;
     private String restaurantNumber;
+    @Column(columnDefinition = "TEXT")
     private String restaurantBody;
+    private String restaurantCategory;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="president_id")
@@ -42,10 +44,11 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviews;
 
-    public void updateRestaurant(String restaurantName, String restaurantAddress, String restaurantNumber, String restaurantBody) {
+    public void updateRestaurant(String restaurantName, String restaurantAddress, String restaurantNumber, String restaurantBody, String restaurantCategory) {
         this.restaurantName = restaurantName;
         this.restaurantAddress = restaurantAddress;
         this.restaurantNumber = restaurantNumber;
         this.restaurantBody = restaurantBody;
+        this.restaurantCategory = restaurantCategory;
     }
 }
