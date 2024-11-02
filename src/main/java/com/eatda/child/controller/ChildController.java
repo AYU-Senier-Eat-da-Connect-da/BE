@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -29,5 +30,21 @@ public class ChildController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/get/{childId}")
+    public ResponseEntity<ChildDTO> getMyInformation(@PathVariable Long childId){
+        ChildDTO childDto = childService.getChildInfo(childId);
+        if (childDto != null) {
+            return new ResponseEntity<>(childDto, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/update-amount/{childId}")
+    public ResponseEntity<String> updateAmount(@PathVariable Long childId, @RequestParam int amount) {
+        childService.updateAmounts(childId, amount);
+        return ResponseEntity.ok("아동 충전 완료");
     }
 }

@@ -5,6 +5,7 @@ import com.eatda.child.service.ChildService;
 import com.eatda.sponsor.form.SponsorDTO;
 import com.eatda.sponsor.service.SponsorService;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,6 +61,24 @@ public class SponsorController {
     @DeleteMapping("/{sponsorId}/delete/{childId}")
     public ResponseEntity<SponsorDTO> deleteChildFromSponsor(@PathVariable Long sponsorId, @PathVariable Long childId) {
         SponsorDTO sponsorDTO = sponsorService.sponsorDeleteChild(sponsorId, childId);
+        if (sponsorDTO != null) {
+            return new ResponseEntity<>(sponsorDTO, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // 후원 확인 후 금액 추가
+    @GetMapping("/update-amount/{sponsorId}")
+    public ResponseEntity<String> updateAmount(@PathVariable Long sponsorId, @RequestParam int amount) {
+        sponsorService.updateAmounts(sponsorId, amount);
+        return ResponseEntity.ok("후원 결제 후 금액 업데이트 완료");
+    }
+
+    // 후원자 내 정보 가져오기
+    @GetMapping("/get/{sponsorId}")
+    public ResponseEntity<SponsorDTO> getMyInformation(@PathVariable Long sponsorId){
+        SponsorDTO sponsorDTO = sponsorService.getSponsorInfo(sponsorId);
         if (sponsorDTO != null) {
             return new ResponseEntity<>(sponsorDTO, HttpStatus.OK);
         } else {

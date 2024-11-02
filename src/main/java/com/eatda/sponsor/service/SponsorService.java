@@ -74,4 +74,38 @@ public class SponsorService {
 
         return null;
     }
+
+    @Transactional
+    public void updateAmounts(Long sponsorId, int amount) {
+        Sponsor sponsor = sponsorRepository.findById(sponsorId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid sponsor ID"));
+
+        sponsor.setSponsorAmount(sponsor.getSponsorAmount() + amount);
+
+        Child child = sponsor.getChild();
+        if (child != null) {
+            child.setChildAmount(child.getChildAmount() + amount);
+            childRepository.save(child);
+        }
+
+        sponsorRepository.save(sponsor);
+    }
+
+    public SponsorDTO getSponsorInfo(Long sponsorId) {
+        Optional<Sponsor> sponsorOptional = sponsorRepository.findById(sponsorId);
+        if (sponsorOptional.isPresent()) {
+            Sponsor sponsor = sponsorOptional.get();
+
+            return SponsorDTO.builder()
+                    .id(sponsor.getId())
+                    .sponsorAddress(sponsor.getSponsorAddress())
+                    .sponsorEmail(sponsor.getSponsorEmail())
+                    .sponsorNumber(sponsor.getSponsorNumber())
+                    .sponsorName(sponsor.getSponsorName())
+                    .sponsorAmount(sponsor.getSponsorAmount())
+                    .build();
+        } else {
+            throw new RuntimeException("Sponsor not found");
+        }
+    }
 }

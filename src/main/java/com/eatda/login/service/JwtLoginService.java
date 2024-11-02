@@ -82,6 +82,7 @@ public class JwtLoginService {
                 .childNumber(joinRequest.getChildNumber())
                 .childPassword(hashedPassword) // 해시 처리된 비밀번호 사용
                 .childAddress(joinRequest.getChildAddress())
+                .childAmount(0)
                 .build();
 
         childRepository.save(newChild);
@@ -118,6 +119,7 @@ public class JwtLoginService {
                 .sponsorPassword(hashedPassword) // 해시 처리된 비밀번호 사용
                 .sponsorAddress(joinRequest.getSponsorAddress())
                 .sponsorNumber(joinRequest.getSponsorNumber())
+                .sponsorAmount(0)
                 .build();
 
         sponsorRepository.save(newSponsor);

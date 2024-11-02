@@ -22,11 +22,16 @@ public class Sponsor {
     private String sponsorPassword;
     private String sponsorAddress;
     private String sponsorNumber;
+    private int sponsorAmount;
 
     @OneToOne(mappedBy = "sponsor", cascade = CascadeType.ALL)
     private Child child;
 
     public void setChild(Child child) {
         this.child = child;
+    }
+
+    public void setSponsorAmount(int sponsorAmount) {
+        this.sponsorAmount = sponsorAmount;
     }
 }

@@ -16,6 +16,7 @@ public class ChildDTO {
     private String childEmail;
     private String childNumber;
     private String childAddress;
+    private int childAmount;
 
     public static ChildDTO toEntity(Child child) {
         return ChildDTO.builder()
@@ -24,6 +25,7 @@ public class ChildDTO {
                 .childEmail(child.getChildEmail())
                 .childNumber(child.getChildNumber())
                 .childAddress(child.getChildAddress())
+                .childAmount(child.getChildAmount())
                 .build();
     }
 }
