@@ -27,6 +27,7 @@ public class Child {
     private String childPassword;
     private String childNumber;
     private String childAddress;
+    private int childAmount;
 
     @OneToOne
     @JoinColumn(name = "card_id", unique = true)
@@ -44,5 +45,9 @@ public class Child {
 
     public void setSponsor(Sponsor sponsor) {
         this.sponsor = sponsor;
+    }
+
+    public void setChildAmount(int childAmount) {
+        this.childAmount = childAmount;
     }
 }

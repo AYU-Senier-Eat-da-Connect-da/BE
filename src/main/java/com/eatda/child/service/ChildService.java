@@ -7,6 +7,7 @@ import com.eatda.sponsor.domain.Sponsor;
 import com.eatda.sponsor.form.SponsorDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,5 +56,34 @@ public class ChildService {
         }
 
         return null;
+    }
+
+    public ChildDTO getChildInfo(Long childId) {
+
+        Optional<Child> childOptional = childRepository.findById(childId);
+        if (childOptional.isPresent()) {
+            Child child = childOptional.get();
+
+            return ChildDTO.builder()
+                    .id(child.getId())
+                    .childName(child.getChildName())
+                    .childNumber(child.getChildNumber())
+                    .childEmail(child.getChildEmail())
+                    .childAddress(child.getChildAddress())
+                    .childAmount(child.getChildAmount())
+                    .build();
+        } else {
+            throw new RuntimeException("Sponsor not found");
+        }
+    }
+
+    @Transactional
+    public void updateAmounts(Long childId, int amount) {
+        Child child = childRepository.findById(childId)
+                .orElseThrow(()->new IllegalArgumentException("Invalid child ID"));
+
+        child.setChildAmount(child.getChildAmount()+amount);
+
+        childRepository.save(child);
     }
 }

@@ -2,9 +2,11 @@ package com.eatda.president.controller;
 
 import com.eatda.menu.domain.MenuDTO;
 import com.eatda.menu.service.MenuService;
+import com.eatda.president.dto.PresidentDTO;
 import com.eatda.president.service.PresidentService;
 import com.eatda.restaurant.domain.RestaurantDTO;
 import com.eatda.restaurant.service.RestaurantService;
+import com.eatda.sponsor.form.SponsorDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ public class PresidentController {
 
     private final RestaurantService restaurantService;
     private final MenuService menuService;
+    private final PresidentService presidentService;
 
     // 사장님 id값으로 내 가게 찾기
     @GetMapping("/findMyRestaurant/{presidentId}")
@@ -41,6 +44,16 @@ public class PresidentController {
         if(menus!=null){
             return new ResponseEntity<>(menus, HttpStatus.OK);
         }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/get/{presidentId}")
+    public ResponseEntity<PresidentDTO> getMyInformation(@PathVariable Long presidentId){
+        PresidentDTO presidentDTO = presidentService.getPresidentInfo(presidentId);
+        if (presidentDTO != null) {
+            return new ResponseEntity<>(presidentDTO, HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
