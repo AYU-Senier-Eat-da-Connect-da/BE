@@ -49,6 +49,7 @@ public class RestaurantService {
                     .restaurantNumber(restaurantEntity.getRestaurantNumber())
                     .restaurantBody(restaurantEntity.getRestaurantBody())
                     .restaurantCategory(restaurantEntity.getRestaurantCategory())
+                    .presidentId(restaurantEntity.getPresident().getId())
                     .menus(menuDTOS)
                     .build();
         } else {
