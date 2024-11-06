@@ -41,58 +41,66 @@ public class OrderService {
         if (childOptional.isPresent()) {
             Child child = childOptional.get();
 
-            Optional<Restaurant> restaurantOptional = restaurantRepository.findById(orderRequestDTO.getRestaurantId());
-            if (restaurantOptional.isPresent()) {
-                Restaurant restaurant = restaurantOptional.get();
+            // 잔액이 충분한지 확인
+            if (child.getChildAmount() >= orderRequestDTO.getTotalsum()) {
+                child.setChildAmount(child.getChildAmount() - orderRequestDTO.getTotalsum()); // childamount에서 totalsum 차감
+                childRepository.save(child); // 변경사항 저장
 
-                // Order 객체 생성
-                Order order = Order.builder()
-                        .child(child)
-                        .restaurant(restaurant)
-                        .orderTime(LocalDateTime.now())
-                        .menuOrders(new ArrayList<>()) // 빈 리스트로 초기화
-                        .build();
+                Optional<Restaurant> restaurantOptional = restaurantRepository.findById(orderRequestDTO.getRestaurantId());
+                if (restaurantOptional.isPresent()) {
+                    Restaurant restaurant = restaurantOptional.get();
 
-                // MenuOrder 리스트 생성
-                for (OrderRequestDTO.MenuOrder menuOrderRequest : orderRequestDTO.getMenuOrders()) {
-                    Optional<Menu> menuOptional = menuRepository.findById(menuOrderRequest.getMenuId());
-                    if (menuOptional.isPresent()) {
-                        Menu menu = menuOptional.get();
+                    // Order 객체 생성
+                    Order order = Order.builder()
+                            .child(child)
+                            .restaurant(restaurant)
+                            .orderTime(LocalDateTime.now())
+                            .menuOrders(new ArrayList<>()) // 빈 리스트로 초기화
+                            .build();
 
-                        // MenuOrder 생성하고 order 설정
-                        MenuOrder newMenuOrder = MenuOrder.builder()
-                                .menu(menu)
-                                .menuCount(menuOrderRequest.getMenuCount())
-                                .order(order) // 여기서 직접 order 설정
-                                .build();
+                    // MenuOrder 리스트 생성
+                    for (OrderRequestDTO.MenuOrder menuOrderRequest : orderRequestDTO.getMenuOrders()) {
+                        Optional<Menu> menuOptional = menuRepository.findById(menuOrderRequest.getMenuId());
+                        if (menuOptional.isPresent()) {
+                            Menu menu = menuOptional.get();
 
-                        order.getMenuOrders().add(newMenuOrder); // order에 MenuOrder 추가
-                    } else {
-                        throw new RuntimeException("메뉴를 찾을 수 없습니다.");
+                            // MenuOrder 생성하고 order 설정
+                            MenuOrder newMenuOrder = MenuOrder.builder()
+                                    .menu(menu)
+                                    .menuCount(menuOrderRequest.getMenuCount())
+                                    .order(order) // 여기서 직접 order 설정
+                                    .build();
+
+                            order.getMenuOrders().add(newMenuOrder); // order에 MenuOrder 추가
+                        } else {
+                            throw new RuntimeException("메뉴를 찾을 수 없습니다.");
+                        }
                     }
+
+                    // Order 저장
+                    orderRepository.save(order);
+
+                    // 가격 계산
+                    int totalPrice = order.getMenuOrders().stream()
+                            .mapToInt(menuOrder -> menuOrder.getMenu().getPrice() * menuOrder.getMenuCount())
+                            .sum();
+
+                    return OrderResponseDTO.builder()
+                            .id(order.getId())
+                            .restaurantId(restaurant.getId())
+                            .childId(child.getId())
+                            .menuOrders(order.getMenuOrders().stream()
+                                    .map(menuOrder -> OrderResponseDTO.MenuOrder.builder()
+                                            .menuId(menuOrder.getMenu().getId())
+                                            .menuCount(menuOrder.getMenuCount())
+                                            .build())
+                                    .collect(Collectors.toList()))
+                            .orderTime(order.getOrderTime())
+                            .price(totalPrice)
+                            .build();
                 }
-
-                // Order 저장
-                orderRepository.save(order);
-
-                // 가격 계산
-                int totalPrice = order.getMenuOrders().stream()
-                        .mapToInt(menuOrder -> menuOrder.getMenu().getPrice() * menuOrder.getMenuCount())
-                        .sum();
-
-                return OrderResponseDTO.builder()
-                        .id(order.getId())
-                        .restaurantId(restaurant.getId())
-                        .childId(child.getId())
-                        .menuOrders(order.getMenuOrders().stream()
-                                .map(menuOrder -> OrderResponseDTO.MenuOrder.builder()
-                                        .menuId(menuOrder.getMenu().getId())
-                                        .menuCount(menuOrder.getMenuCount())
-                                        .build())
-                                .collect(Collectors.toList()))
-                        .orderTime(order.getOrderTime())
-                        .price(totalPrice)
-                        .build();
+            } else {
+                throw new RuntimeException("잔액이 부족합니다.");
             }
         }
         throw new RuntimeException("주문을 생성할 수 없습니다.");

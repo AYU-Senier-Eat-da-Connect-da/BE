@@ -26,4 +26,5 @@ public class OrderRequestDTO {
     private Long restaurantId;
     private Long childId;
     private List<MenuOrder> menuOrders; // 여러 개의 메뉴 주문 처리
+    private int totalsum;
 }
