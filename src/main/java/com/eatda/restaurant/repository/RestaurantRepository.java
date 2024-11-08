@@ -27,4 +27,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     List<Restaurant> findByPresidentId(Long presidentId);
 
     Optional<Restaurant> findFirstByPresidentId(Long presidentId);
+
+
 }

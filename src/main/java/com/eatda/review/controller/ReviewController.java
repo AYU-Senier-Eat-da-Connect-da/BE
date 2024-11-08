@@ -60,4 +60,13 @@ public class ReviewController {
         return ResponseEntity.ok(reviews);
     }
 
+    @GetMapping("/president/{presidentId}")
+    public ResponseEntity<List<ReviewResponseDTO>> getReviewsByPresidentId(@PathVariable Long presidentId) {
+        List<ReviewResponseDTO> reviews = reviewService.getReviewListByPresidentId(presidentId);
+        return ResponseEntity.ok(reviews);
+    }
+
+
+
+
 }

@@ -172,10 +172,13 @@ public class OrderService {
                 .map(order -> OrderResponseDTO.builder()
                         .id(order.getId())
                         .restaurantId(order.getRestaurant().getId())
+                        .restaurantName(order.getRestaurant().getRestaurantName())
                         .childId(order.getChild().getId())
                         .menuOrders(order.getMenuOrders().stream() // MenuOrders로 변경
                                 .map(menuOrder -> OrderResponseDTO.MenuOrder.builder()
                                         .menuId(menuOrder.getMenu().getId())
+                                        .menuName(menuOrder.getMenu().getMenuName())
+                                        .menuBody(menuOrder.getMenu().getMenuBody())
                                         .menuCount(menuOrder.getMenuCount())
                                         .build())
                                 .collect(Collectors.toList()))

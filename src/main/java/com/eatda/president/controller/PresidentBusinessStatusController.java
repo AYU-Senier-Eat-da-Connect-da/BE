@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class PresidentBusinessStatusController {
-
+/*
     private final PresidentBusinessStatusService presidentBusinessStatusService;
 
     @PostMapping("/api/president/businessNumberCheck")
@@ -30,4 +30,6 @@ public class PresidentBusinessStatusController {
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+ */
 }

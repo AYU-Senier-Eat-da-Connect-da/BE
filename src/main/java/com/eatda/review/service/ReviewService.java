@@ -108,4 +108,17 @@ public class ReviewService {
                 .map(ReviewResponseDTO::toEntity)
                 .collect(Collectors.toList());
     }
+
+    // 음식점Id에 해당하는 모든 리뷰 리스트 조회하기
+    public List<ReviewResponseDTO> getReviewListByPresidentId(Long presidentId) {
+        Restaurant restaurant = restaurantRepository.findFirstByPresidentId(presidentId)
+                .orElseThrow(() -> new RuntimeException("해당 presidentId와 연관된 가게를 찾을 수 없습니다."));
+
+        List<Review> reviewList = reviewRepository.findByRestaurantId(restaurant.getId());
+
+        return reviewList.stream()
+                .map(ReviewResponseDTO::toEntity)
+                .collect(Collectors.toList());
+    }
+
 }
