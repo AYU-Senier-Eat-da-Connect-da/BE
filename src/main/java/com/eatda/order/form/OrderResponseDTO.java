@@ -21,10 +21,13 @@ public class OrderResponseDTO {
     public static class MenuOrder {
         private Long menuId;
         private int menuCount; //  주문할 메뉴 수량
+        private String menuName;
+        private String menuBody;
     }
 
     private Long id;
     private Long restaurantId;
+    private String restaurantName;
     private Long childId;
     private List<MenuOrder> menuOrders; // 여러 개의 메뉴 주문
     private LocalDateTime orderTime;

@@ -14,7 +14,7 @@ import java.net.URI;
 @Service
 @RequiredArgsConstructor
 public class PresidentBusinessStatusService {
-
+/*
     @Value("${baseUrl}")
     private String baseUrl;
 
@@ -43,4 +43,6 @@ public class PresidentBusinessStatusService {
 
         return null;
     }
+
+ */
 }

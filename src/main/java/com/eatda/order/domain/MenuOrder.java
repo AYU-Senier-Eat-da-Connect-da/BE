@@ -22,7 +22,7 @@ public class MenuOrder {
     @JoinColumn(name = "order_id")
     private Order order; // 주문과의 관계
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "menu_id")
     private Menu menu; // 메뉴와의 관계
 
