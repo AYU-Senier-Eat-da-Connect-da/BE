@@ -40,6 +40,7 @@ dependencies {
 	implementation 'mysql:mysql-connector-java:8.0.28'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'	//유효성 검사
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'	//웹소켓
+	implementation 'com.google.firebase:firebase-admin:9.2.0'	// FireBase 의존성 주입
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
