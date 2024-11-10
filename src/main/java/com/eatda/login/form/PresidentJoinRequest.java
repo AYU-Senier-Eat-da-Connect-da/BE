@@ -11,4 +11,5 @@ public class PresidentJoinRequest {
     private String presidentEmail;
     private String presidentPassword;
     private String presidentNumber;
+    private String fcmToken;
 }

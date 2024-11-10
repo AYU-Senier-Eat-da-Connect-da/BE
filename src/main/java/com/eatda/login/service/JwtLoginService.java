@@ -46,6 +46,7 @@ public class JwtLoginService {
                 .presidentEmail(joinRequest.getPresidentEmail())
                 .presidentPassword(hashedPassword) // 해시 처리된 비밀번호 사용
                 .presidentNumber(joinRequest.getPresidentNumber())
+                .fcmToken(joinRequest.getFcmToken())
                 .build();
 
         presidentRepository.save(newPresident);
@@ -83,6 +84,7 @@ public class JwtLoginService {
                 .childPassword(hashedPassword) // 해시 처리된 비밀번호 사용
                 .childAddress(joinRequest.getChildAddress())
                 .childAmount(0)
+                .fcmToken(joinRequest.getFcmToken())
                 .build();
 
         childRepository.save(newChild);
@@ -120,6 +122,7 @@ public class JwtLoginService {
                 .sponsorAddress(joinRequest.getSponsorAddress())
                 .sponsorNumber(joinRequest.getSponsorNumber())
                 .sponsorAmount(0)
+                .fcmToken(joinRequest.getFcmToken())
                 .build();
 
         sponsorRepository.save(newSponsor);

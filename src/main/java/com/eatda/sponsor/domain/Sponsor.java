@@ -1,5 +1,6 @@
 package com.eatda.sponsor.domain;
 
+import com.eatda.FCM.form.NotifiableUser;
 import com.eatda.child.domain.Child;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class Sponsor {
+public class Sponsor implements NotifiableUser {
 
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -23,6 +24,7 @@ public class Sponsor {
     private String sponsorAddress;
     private String sponsorNumber;
     private int sponsorAmount;
+    private String fcmToken;
 
     @OneToOne(mappedBy = "sponsor", cascade = CascadeType.ALL)
     private Child child;
@@ -33,5 +35,15 @@ public class Sponsor {
 
     public void setSponsorAmount(int sponsorAmount) {
         this.sponsorAmount = sponsorAmount;
+    }
+
+    @Override
+    public String getFcmToken() {
+        return this.fcmToken;
+    }
+
+    @Override
+    public Long getId() {
+        return this.id;
     }
 }

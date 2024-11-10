@@ -1,5 +1,6 @@
 package com.eatda.child.domain;
 
+import com.eatda.FCM.form.NotifiableUser;
 import com.eatda.card.domain.Card;
 import com.eatda.order.domain.Order;
 import com.eatda.review.domain.Review;
@@ -17,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class Child {
+public class Child implements NotifiableUser {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,6 +29,7 @@ public class Child {
     private String childNumber;
     private String childAddress;
     private int childAmount;
+    private String fcmToken;
 
     @OneToOne
     @JoinColumn(name = "card_id", unique = true)
@@ -49,5 +51,15 @@ public class Child {
 
     public void setChildAmount(int childAmount) {
         this.childAmount = childAmount;
+    }
+
+    @Override
+    public String getFcmToken() {
+        return this.fcmToken;
+    }
+
+    @Override
+    public Long getId() {
+        return this.id;
     }
 }

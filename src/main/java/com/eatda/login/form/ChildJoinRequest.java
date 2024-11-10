@@ -11,4 +11,5 @@ public class ChildJoinRequest {
     private String childEmail;
     private String childPassword;
     private String childAddress;
+    private String fcmToken;
 }

@@ -11,4 +11,5 @@ public class SponsorRequest {
     private String sponsorPassword;
     private String sponsorAddress;
     private String sponsorNumber;
+    private String fcmToken;
 }

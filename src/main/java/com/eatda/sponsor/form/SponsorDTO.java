@@ -19,6 +19,7 @@ public class SponsorDTO {
     private String sponsorAddress;
     private String sponsorNumber;
     private int sponsorAmount;
+    private String fcmToken;
     private ChildDTO child;
 
     public static SponsorDTO toEntity(Sponsor sponsor) {
