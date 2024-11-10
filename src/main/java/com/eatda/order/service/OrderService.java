@@ -189,4 +189,48 @@ public class OrderService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    public List<OrderResponseDTO> getOrderListByPresidentId(Long presidentId) {
+        List<Restaurant> restaurants = restaurantRepository.findByPresidentId(presidentId);
+
+        if (restaurants.isEmpty()) {
+            throw new IllegalArgumentException("No restaurants found for presidentId: " + presidentId);
+        }
+
+        Restaurant restaurant = restaurants.get(0); // 필요시 조건 추가
+
+        Long restaurantId = restaurant.getId();
+
+        List<Order> orderList = orderRepository.findByRestaurantId(restaurantId);
+
+        return orderList.stream()
+                .map(order -> OrderResponseDTO.builder()
+                        .id(order.getId())
+                        .restaurantId(order.getRestaurant().getId())
+                        .restaurantName(order.getRestaurant().getRestaurantName())
+                        .childId(order.getChild().getId())
+                        .child(OrderResponseDTO.Child.builder()
+                                .id(order.getChild().getId())
+                                .name(order.getChild().getChildName())
+                                .email(order.getChild().getChildEmail())
+                                .phone(order.getChild().getChildNumber())
+                                .address(order.getChild().getChildAddress())
+                                .build())
+                        .menuOrders(order.getMenuOrders().stream()
+                                .map(menuOrder -> OrderResponseDTO.MenuOrder.builder()
+                                        .menuId(menuOrder.getMenu().getId())
+                                        .menuCount(menuOrder.getMenuCount())
+                                        .menuName(menuOrder.getMenu().getMenuName())
+                                        .menuBody(menuOrder.getMenu().getMenuBody())
+                                        .build())
+                                .collect(Collectors.toList()))
+                        .orderTime(order.getOrderTime())
+                        .price(order.getMenuOrders().stream()
+                                .mapToInt(menuOrder -> menuOrder.getMenu().getPrice() * menuOrder.getMenuCount())
+                                .sum())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+
 }

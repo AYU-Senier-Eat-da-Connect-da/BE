@@ -52,6 +52,15 @@ import java.util.List;
             List<OrderResponseDTO> orderResponseDTOs = orderService.getOrdersByChildId(childId);
             return ResponseEntity.ok(orderResponseDTOs);
         }
+
+        /*
+            사장ID 별 주문 리스트 조회(사장이 확인)
+         */
+        @GetMapping("/restaurant/president/{presidentId}")
+        public ResponseEntity<List<OrderResponseDTO>> getOrderListByPresidentId(@PathVariable Long presidentId) {
+            List<OrderResponseDTO> orderList = orderService.getOrderListByPresidentId(presidentId);
+            return ResponseEntity.ok(orderList);
+        }
 }
 
 
