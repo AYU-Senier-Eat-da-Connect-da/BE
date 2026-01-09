@@ -1,14 +1,11 @@
 package com.eatda.review.service;
 
-import com.eatda.child.domain.Child;
-import com.eatda.child.repository.ChildRepository;
-import com.eatda.child.service.ChildService;
-import com.eatda.restaurant.domain.Restaurant;
-import com.eatda.restaurant.repository.RestaurantRepository;
-import com.eatda.review.domain.Review;
-import com.eatda.review.form.ReviewRequestDTO;
-import com.eatda.review.form.ReviewResponseDTO;
-import com.eatda.review.repository.ReviewRepository;
+import com.eatda.domain.restaurant.entity.Restaurant;
+import com.eatda.domain.restaurant.repository.RestaurantRepository;
+import com.eatda.domain.review.repository.ReviewRepository;
+import com.eatda.domain.review.service.ReviewService;
+import com.eatda.domain.user.child.entity.Child;
+import com.eatda.domain.user.child.repository.ChildRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
