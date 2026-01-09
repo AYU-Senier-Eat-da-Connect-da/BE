@@ -8,6 +8,8 @@ import com.eatda.domain.user.president.repository.PresidentRepository;
 import com.eatda.domain.restaurant.dto.RestaurantDTO;
 import com.eatda.domain.restaurant.entity.Restaurant;
 import com.eatda.domain.restaurant.repository.RestaurantRepository;
+import com.eatda.global.exception.CustomException;
+import com.eatda.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +55,7 @@ public class RestaurantService {
                     .menus(menuDTOS)
                     .build();
         } else {
-            throw new RuntimeException("Restaurant not found");
+            throw new CustomException(ErrorCode.RESTAURANT_NOT_FOUND);
         }
     }
 
@@ -96,7 +98,7 @@ public class RestaurantService {
             restaurantRepository.save(restaurant);
             return RestaurantDTO.toEntity(restaurant);
         } else {
-            throw new RuntimeException("Restaurant not found");
+            throw new CustomException(ErrorCode.RESTAURANT_NOT_FOUND);
         }
     }
 
@@ -107,7 +109,7 @@ public class RestaurantService {
             Restaurant restaurantEntity = restaurantOptional.get();
             restaurantRepository.delete(restaurantEntity);
         }else{
-            throw new RuntimeException("Restaurant not found");
+            throw new CustomException(ErrorCode.RESTAURANT_NOT_FOUND);
         }
     }
 

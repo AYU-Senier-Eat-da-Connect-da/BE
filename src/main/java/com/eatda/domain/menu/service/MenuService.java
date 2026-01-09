@@ -5,6 +5,8 @@ import com.eatda.domain.menu.entity.Menu;
 import com.eatda.domain.menu.repository.MenuRepository;
 import com.eatda.domain.restaurant.entity.Restaurant;
 import com.eatda.domain.restaurant.repository.RestaurantRepository;
+import com.eatda.global.exception.CustomException;
+import com.eatda.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +34,7 @@ public class MenuService {
                     .price(menu.getPrice())
                     .build();
         } else {
-            throw new RuntimeException("Menu not found");
+            throw new CustomException(ErrorCode.MENU_NOT_FOUND);
         }
     }
 
@@ -67,7 +69,7 @@ public class MenuService {
             menuRepository.save(menu);
             return MenuDTO.toEntity(menu);
         } else {
-            throw new RuntimeException("menu not found");
+            throw new CustomException(ErrorCode.MENU_NOT_FOUND);
         }
     }
 
@@ -78,7 +80,7 @@ public class MenuService {
             Menu menuEntity = menuEntityOptional.get();
             menuRepository.delete(menuEntity);
         } else {
-            throw new RuntimeException("Menu not found");
+            throw new CustomException(ErrorCode.MENU_NOT_FOUND);
         }
     }
 

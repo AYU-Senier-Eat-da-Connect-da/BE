@@ -8,6 +8,8 @@ import com.eatda.domain.review.dto.ReviewRequestDTO;
 import com.eatda.domain.review.dto.ReviewResponseDTO;
 import com.eatda.domain.review.entity.Review;
 import com.eatda.domain.review.repository.ReviewRepository;
+import com.eatda.global.exception.CustomException;
+import com.eatda.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +62,7 @@ public class ReviewService {
         if (reviewOptional.isPresent()) {
             return ReviewResponseDTO.toEntity(reviewOptional.get());
         }
-        throw new RuntimeException("Review not found");
+        throw new CustomException(ErrorCode.REVIEW_NOT_FOUND);
     }
 
     public List<ReviewResponseDTO> getReviewListByRestaurantId(Long restaurantId) {
@@ -81,6 +83,6 @@ public class ReviewService {
                     .map(ReviewResponseDTO::toEntity)
                     .collect(Collectors.toList());
         }
-        throw new RuntimeException("Restaurant not found for president");
+        throw new CustomException(ErrorCode.RESTAURANT_NOT_FOUND);
     }
 }

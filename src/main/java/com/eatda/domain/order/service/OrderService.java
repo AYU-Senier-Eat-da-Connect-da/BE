@@ -11,6 +11,8 @@ import com.eatda.domain.order.dto.OrderResponseDTO;
 import com.eatda.domain.order.repository.OrderRepository;
 import com.eatda.domain.restaurant.entity.Restaurant;
 import com.eatda.domain.restaurant.repository.RestaurantRepository;
+import com.eatda.global.exception.CustomException;
+import com.eatda.global.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -64,7 +66,7 @@ public class OrderService {
 
                             order.getMenuOrders().add(newMenuOrder);
                         } else {
-                            throw new RuntimeException("메뉴를 찾을 수 없습니다.");
+                            throw new CustomException(ErrorCode.MENU_NOT_FOUND);
                         }
                     }
 
@@ -89,10 +91,10 @@ public class OrderService {
                             .build();
                 }
             } else {
-                throw new RuntimeException("잔액이 부족합니다.");
+                throw new CustomException(ErrorCode.INSUFFICIENT_BALANCE);
             }
         }
-        throw new RuntimeException("주문을 생성할 수 없습니다.");
+        throw new CustomException(ErrorCode.ORDER_CREATION_FAILED);
     }
 
     public List<OrderResponseDTO> getOrderListByRestaurantId(Long restaurantId) {
@@ -119,7 +121,7 @@ public class OrderService {
 
     public OrderResponseDTO getOrderByOrderId(Long orderId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("주문을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
         return OrderResponseDTO.builder()
                 .id(order.getId())
@@ -141,7 +143,7 @@ public class OrderService {
     public List<OrderResponseDTO> getOrdersByChildId(Long childId) {
         List<Order> orders = orderRepository.findByChildId(childId);
         if (orders.isEmpty()) {
-            throw new RuntimeException("주문을 찾을 수 없습니다.");
+            throw new CustomException(ErrorCode.ORDER_NOT_FOUND);
         }
 
         return orders.stream()

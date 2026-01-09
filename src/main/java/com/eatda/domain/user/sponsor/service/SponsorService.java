@@ -6,6 +6,8 @@ import com.eatda.domain.user.child.repository.ChildRepository;
 import com.eatda.domain.user.sponsor.dto.SponsorDTO;
 import com.eatda.domain.user.sponsor.entity.Sponsor;
 import com.eatda.domain.user.sponsor.repository.SponsorRepository;
+import com.eatda.global.exception.CustomException;
+import com.eatda.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,7 +88,7 @@ public class SponsorService {
     @Transactional
     public void updateAmounts(Long sponsorId, int amount) {
         Sponsor sponsor = sponsorRepository.findById(sponsorId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid sponsor ID"));
+                .orElseThrow(() -> new CustomException(ErrorCode.SPONSOR_NOT_FOUND));
 
         sponsor.setSponsorAmount(sponsor.getSponsorAmount() + amount);
 
@@ -105,7 +107,7 @@ public class SponsorService {
             Sponsor sponsor = sponsorOptional.get();
             return SponsorDTO.toEntity(sponsor);
         } else {
-            throw new RuntimeException("Sponsor not found");
+            throw new CustomException(ErrorCode.SPONSOR_NOT_FOUND);
         }
     }
 }
