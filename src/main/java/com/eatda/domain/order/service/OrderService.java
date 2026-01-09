@@ -34,67 +34,59 @@ public class OrderService {
 
     @Transactional
     public OrderResponseDTO createOrder(OrderRequestDTO orderRequestDTO) {
-        Optional<Child> childOptional = childRepository.findById(orderRequestDTO.getChildId());
-        if (childOptional.isPresent()) {
-            Child child = childOptional.get();
+        // 아동 조회 및 결제
+        Child child = childRepository.findById(orderRequestDTO.getChildId())
+                .orElseThrow(() -> new CustomException(ErrorCode.CHILD_NOT_FOUND));
 
-            if (child.getChildAmount() >= orderRequestDTO.getTotalsum()) {
-                child.setChildAmount(child.getChildAmount() - orderRequestDTO.getTotalsum());
-                childRepository.save(child);
+        // DDD: 도메인 메서드를 통한 결제 (잔액 검증 및 차감이 Entity 내에 캡슐화)
+        child.pay(orderRequestDTO.getTotalsum());
 
-                Optional<Restaurant> restaurantOptional = restaurantRepository.findById(orderRequestDTO.getRestaurantId());
-                if (restaurantOptional.isPresent()) {
-                    Restaurant restaurant = restaurantOptional.get();
+        // 식당 조회
+        Restaurant restaurant = restaurantRepository.findById(orderRequestDTO.getRestaurantId())
+                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
 
-                    Order order = Order.builder()
-                            .child(child)
-                            .restaurant(restaurant)
-                            .orderTime(LocalDateTime.now())
-                            .menuOrders(new ArrayList<>())
-                            .build();
+        // 주문 생성
+        Order order = Order.builder()
+                .child(child)
+                .restaurant(restaurant)
+                .orderTime(LocalDateTime.now())
+                .menuOrders(new ArrayList<>())
+                .build();
 
-                    for (OrderRequestDTO.MenuOrder menuOrderRequest : orderRequestDTO.getMenuOrders()) {
-                        Optional<Menu> menuOptional = menuRepository.findById(menuOrderRequest.getMenuId());
-                        if (menuOptional.isPresent()) {
-                            Menu menu = menuOptional.get();
+        // 메뉴 추가
+        for (OrderRequestDTO.MenuOrder menuOrderRequest : orderRequestDTO.getMenuOrders()) {
+            Menu menu = menuRepository.findById(menuOrderRequest.getMenuId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND));
 
-                            MenuOrder newMenuOrder = MenuOrder.builder()
-                                    .menu(menu)
-                                    .menuCount(menuOrderRequest.getMenuCount())
-                                    .order(order)
-                                    .build();
+            MenuOrder newMenuOrder = MenuOrder.builder()
+                    .menu(menu)
+                    .menuCount(menuOrderRequest.getMenuCount())
+                    .order(order)
+                    .build();
 
-                            order.getMenuOrders().add(newMenuOrder);
-                        } else {
-                            throw new CustomException(ErrorCode.MENU_NOT_FOUND);
-                        }
-                    }
-
-                    orderRepository.save(order);
-
-                    int totalPrice = order.getMenuOrders().stream()
-                            .mapToInt(menuOrder -> menuOrder.getMenu().getPrice() * menuOrder.getMenuCount())
-                            .sum();
-
-                    return OrderResponseDTO.builder()
-                            .id(order.getId())
-                            .restaurantId(restaurant.getId())
-                            .childId(child.getId())
-                            .menuOrders(order.getMenuOrders().stream()
-                                    .map(menuOrder -> OrderResponseDTO.MenuOrder.builder()
-                                            .menuId(menuOrder.getMenu().getId())
-                                            .menuCount(menuOrder.getMenuCount())
-                                            .build())
-                                    .collect(Collectors.toList()))
-                            .orderTime(order.getOrderTime())
-                            .price(totalPrice)
-                            .build();
-                }
-            } else {
-                throw new CustomException(ErrorCode.INSUFFICIENT_BALANCE);
-            }
+            order.getMenuOrders().add(newMenuOrder);
         }
-        throw new CustomException(ErrorCode.ORDER_CREATION_FAILED);
+
+        orderRepository.save(order);
+
+        // 응답 생성
+        int totalPrice = order.getMenuOrders().stream()
+                .mapToInt(menuOrder -> menuOrder.getMenu().getPrice() * menuOrder.getMenuCount())
+                .sum();
+
+        return OrderResponseDTO.builder()
+                .id(order.getId())
+                .restaurantId(restaurant.getId())
+                .childId(child.getId())
+                .menuOrders(order.getMenuOrders().stream()
+                        .map(menuOrder -> OrderResponseDTO.MenuOrder.builder()
+                                .menuId(menuOrder.getMenu().getId())
+                                .menuCount(menuOrder.getMenuCount())
+                                .build())
+                        .collect(Collectors.toList()))
+                .orderTime(order.getOrderTime())
+                .price(totalPrice)
+                .build();
     }
 
     public List<OrderResponseDTO> getOrderListByRestaurantId(Long restaurantId) {

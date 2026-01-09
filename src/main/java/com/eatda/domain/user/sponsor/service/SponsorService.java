@@ -54,11 +54,10 @@ public class SponsorService {
             Sponsor sponsor = sponsorOptional.get();
             Child child = childOptional.get();
 
-            child.setSponsor(sponsor);
-            sponsor.setChild(child);
+            // DDD: 도메인 메서드를 통한 연결
+            sponsor.linkChild(child);
 
             sponsorRepository.save(sponsor);
-            childRepository.save(child);
 
             return SponsorDTO.toEntity(sponsor);
         }
@@ -72,13 +71,11 @@ public class SponsorService {
 
         if (sponsorOptional.isPresent() && childOptional.isPresent()) {
             Sponsor sponsor = sponsorOptional.get();
-            Child child = childOptional.get();
 
-            child.setSponsor(null);
-            sponsor.setChild(null);
+            // DDD: 도메인 메서드를 통한 연결 해제
+            sponsor.unlinkChild();
 
             sponsorRepository.save(sponsor);
-            childRepository.save(child);
 
             return SponsorDTO.toEntity(sponsor);
         }
@@ -90,13 +87,8 @@ public class SponsorService {
         Sponsor sponsor = sponsorRepository.findById(sponsorId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SPONSOR_NOT_FOUND));
 
-        sponsor.setSponsorAmount(sponsor.getSponsorAmount() + amount);
-
-        Child child = sponsor.getChild();
-        if (child != null) {
-            child.setChildAmount(child.getChildAmount() + amount);
-            childRepository.save(child);
-        }
+        // DDD: 도메인 메서드를 통해 후원금 전달 (Sponsor -> Child 로직이 엔티티 내에 캡슐화)
+        sponsor.supportChild(amount);
 
         sponsorRepository.save(sponsor);
     }

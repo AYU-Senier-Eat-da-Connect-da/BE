@@ -23,19 +23,16 @@ public class MenuService {
     private final RestaurantRepository restaurantRepository;
 
     public MenuDTO getMenuById(Long menuId) {
-        Optional<Menu> menuOptional = menuRepository.findById(menuId);
-        if (menuOptional.isPresent()) {
-            Menu menu = menuOptional.get();
-            return MenuDTO.builder()
-                    .id(menu.getId())
-                    .menuName(menu.getMenuName())
-                    .menuBody(menu.getMenuBody())
-                    .menuStatus(menu.getMenuStatus())
-                    .price(menu.getPrice())
-                    .build();
-        } else {
-            throw new CustomException(ErrorCode.MENU_NOT_FOUND);
-        }
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND));
+
+        return MenuDTO.builder()
+                .id(menu.getId())
+                .menuName(menu.getMenuName())
+                .menuBody(menu.getMenuBody())
+                .menuStatus(menu.getMenuStatus())
+                .price(menu.getPrice())
+                .build();
     }
 
     @Transactional
@@ -62,26 +59,20 @@ public class MenuService {
 
     @Transactional
     public MenuDTO updateMenu(MenuDTO menuDTO) {
-        Optional<Menu> menuEntityOptional = menuRepository.findById(menuDTO.getId());
-        if (menuEntityOptional.isPresent()) {
-            Menu menu = menuEntityOptional.get();
-            menu.updateMenu(menuDTO.getMenuName(), menuDTO.getMenuBody(), menuDTO.isMenuStatus(), menuDTO.getPrice());
-            menuRepository.save(menu);
-            return MenuDTO.toEntity(menu);
-        } else {
-            throw new CustomException(ErrorCode.MENU_NOT_FOUND);
-        }
+        Menu menu = menuRepository.findById(menuDTO.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND));
+
+        // DDD: 도메인 메서드를 통한 정보 수정
+        menu.updateInfo(menuDTO.getMenuName(), menuDTO.getMenuBody(), menuDTO.isMenuStatus(), menuDTO.getPrice());
+
+        return MenuDTO.toEntity(menu);
     }
 
     @Transactional
     public void deleteMenu(Long menuId) {
-        Optional<Menu> menuEntityOptional = menuRepository.findById(menuId);
-        if (menuEntityOptional.isPresent()) {
-            Menu menuEntity = menuEntityOptional.get();
-            menuRepository.delete(menuEntity);
-        } else {
-            throw new CustomException(ErrorCode.MENU_NOT_FOUND);
-        }
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND));
+        menuRepository.delete(menu);
     }
 
     public List<MenuDTO> getMenusByPresidentId(Long presidentId) {

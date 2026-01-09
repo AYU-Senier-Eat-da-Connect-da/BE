@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,36 +28,31 @@ public class RestaurantService {
     private final MenuRepository menuRepository;
 
     public RestaurantDTO getRestaurantById(Long restaurantId) {
-        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
-        if (restaurantOptional.isPresent()) {
-            Restaurant restaurantEntity = restaurantOptional.get();
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
 
-            List<Menu> menus = menuRepository.findByRestaurantId(restaurantEntity.getId());
+        List<Menu> menus = menuRepository.findByRestaurantId(restaurant.getId());
 
-            List<MenuDTO> menuDTOS = new ArrayList<>();
-            for (Menu menu : menus) {
-                MenuDTO menuDTO = new MenuDTO();
-                menuDTO.setId(menu.getId());
-                menuDTO.setMenuName(menu.getMenuName());
-                menuDTO.setMenuBody(menu.getMenuBody());
-                menuDTO.setPrice(menu.getPrice());
-                menuDTO.setMenuStatus(menu.getMenuStatus());
-                menuDTOS.add(menuDTO);
-            }
+        List<MenuDTO> menuDTOS = menus.stream()
+                .map(menu -> MenuDTO.builder()
+                        .id(menu.getId())
+                        .menuName(menu.getMenuName())
+                        .menuBody(menu.getMenuBody())
+                        .price(menu.getPrice())
+                        .menuStatus(menu.getMenuStatus())
+                        .build())
+                .collect(Collectors.toList());
 
-            return RestaurantDTO.builder()
-                    .id(restaurantEntity.getId())
-                    .restaurantName(restaurantEntity.getRestaurantName())
-                    .restaurantAddress(restaurantEntity.getRestaurantAddress())
-                    .restaurantNumber(restaurantEntity.getRestaurantNumber())
-                    .restaurantBody(restaurantEntity.getRestaurantBody())
-                    .restaurantCategory(restaurantEntity.getRestaurantCategory())
-                    .presidentId(restaurantEntity.getPresident().getId())
-                    .menus(menuDTOS)
-                    .build();
-        } else {
-            throw new CustomException(ErrorCode.RESTAURANT_NOT_FOUND);
-        }
+        return RestaurantDTO.builder()
+                .id(restaurant.getId())
+                .restaurantName(restaurant.getRestaurantName())
+                .restaurantAddress(restaurant.getRestaurantAddress())
+                .restaurantNumber(restaurant.getRestaurantNumber())
+                .restaurantBody(restaurant.getRestaurantBody())
+                .restaurantCategory(restaurant.getRestaurantCategory())
+                .presidentId(restaurant.getPresident().getId())
+                .menus(menuDTOS)
+                .build();
     }
 
     @Transactional
@@ -84,33 +80,26 @@ public class RestaurantService {
 
     @Transactional
     public RestaurantDTO updateRestaurant(Long restaurantId, RestaurantDTO restaurantDTO) {
-        Optional<Restaurant> restaurantEntityOptional = restaurantRepository.findById(restaurantId);
-        if (restaurantEntityOptional.isPresent()) {
-            Restaurant restaurant = restaurantEntityOptional.get();
-            restaurant.updateRestaurant(
-                    restaurantDTO.getRestaurantName(),
-                    restaurantDTO.getRestaurantAddress(),
-                    restaurantDTO.getRestaurantNumber(),
-                    restaurantDTO.getRestaurantBody(),
-                    restaurantDTO.getRestaurantCategory()
-            );
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
 
-            restaurantRepository.save(restaurant);
-            return RestaurantDTO.toEntity(restaurant);
-        } else {
-            throw new CustomException(ErrorCode.RESTAURANT_NOT_FOUND);
-        }
+        // DDD: 도메인 메서드를 통한 정보 수정
+        restaurant.updateInfo(
+                restaurantDTO.getRestaurantName(),
+                restaurantDTO.getRestaurantAddress(),
+                restaurantDTO.getRestaurantNumber(),
+                restaurantDTO.getRestaurantBody(),
+                restaurantDTO.getRestaurantCategory()
+        );
+
+        return RestaurantDTO.toEntity(restaurant);
     }
 
     @Transactional
     public void deleteRestaurant(Long restaurantId) {
-        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
-        if(restaurantOptional.isPresent()){
-            Restaurant restaurantEntity = restaurantOptional.get();
-            restaurantRepository.delete(restaurantEntity);
-        }else{
-            throw new CustomException(ErrorCode.RESTAURANT_NOT_FOUND);
-        }
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
+        restaurantRepository.delete(restaurant);
     }
 
     public List<RestaurantDTO> findRestaurantsByPresidentId(Long presidentId) {

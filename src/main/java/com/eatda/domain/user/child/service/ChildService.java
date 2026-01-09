@@ -5,6 +5,8 @@ import com.eatda.domain.user.child.entity.Child;
 import com.eatda.domain.user.child.repository.ChildRepository;
 import com.eatda.domain.user.sponsor.dto.SponsorDTO;
 import com.eatda.domain.user.sponsor.entity.Sponsor;
+import com.eatda.global.exception.CustomException;
+import com.eatda.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,7 @@ public class ChildService {
     public ChildDTO getChildById(Long childId) {
         Optional<Child> childOptional = childRepository.findById(childId);
 
-        if(childOptional.isPresent()){
+        if (childOptional.isPresent()) {
             Child child = childOptional.get();
             return ChildDTO.toEntity(child);
         }
@@ -57,29 +59,27 @@ public class ChildService {
     }
 
     public ChildDTO getChildInfo(Long childId) {
-        Optional<Child> childOptional = childRepository.findById(childId);
-        if (childOptional.isPresent()) {
-            Child child = childOptional.get();
+        Child child = childRepository.findById(childId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHILD_NOT_FOUND));
 
-            return ChildDTO.builder()
-                    .id(child.getId())
-                    .childName(child.getChildName())
-                    .childNumber(child.getChildNumber())
-                    .childEmail(child.getChildEmail())
-                    .childAddress(child.getChildAddress())
-                    .childAmount(child.getChildAmount())
-                    .build();
-        } else {
-            throw new RuntimeException("Child not found");
-        }
+        return ChildDTO.builder()
+                .id(child.getId())
+                .childName(child.getChildName())
+                .childNumber(child.getChildNumber())
+                .childEmail(child.getChildEmail())
+                .childAddress(child.getChildAddress())
+                .childAmount(child.getChildAmount())
+                .build();
     }
 
     @Transactional
     public void updateAmounts(Long childId, int amount) {
         Child child = childRepository.findById(childId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid child ID"));
+                .orElseThrow(() -> new CustomException(ErrorCode.CHILD_NOT_FOUND));
 
-        child.setChildAmount(child.getChildAmount() + amount);
-        childRepository.save(child);
+        // DDD: 도메인 메서드를 통한 금액 추가
+        child.receiveSupport(amount);
     }
 }
+
+

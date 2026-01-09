@@ -5,6 +5,7 @@ import com.eatda.domain.restaurant.entity.Restaurant;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -12,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString
 public class Menu {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,18 +23,66 @@ public class Menu {
     private Boolean menuStatus;
     private int price;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
-
     private Restaurant restaurant;
 
-    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MenuPhoto> photos;
+    // ===== 도메인 비즈니스 로직 =====
 
-    public void updateMenu(String menuName, String menuBody, boolean menuStatus, int price) {
-        this.menuName = menuName;
-        this.menuBody = menuBody;
-        this.menuStatus = menuStatus;
-        this.price = price;
+    /**
+     * 메뉴 정보를 수정합니다.
+     */
+    public void updateInfo(String name, String body, Boolean status, Integer price) {
+        if (name != null && !name.isBlank()) {
+            this.menuName = name;
+        }
+        if (body != null) {
+            this.menuBody = body;
+        }
+        if (status != null) {
+            this.menuStatus = status;
+        }
+        if (price != null && price >= 0) {
+            this.price = price;
+        }
+    }
+
+    /**
+     * 메뉴 가격을 변경합니다.
+     */
+    public void changePrice(int newPrice) {
+        if (newPrice < 0) {
+            throw new IllegalArgumentException("가격은 0 이상이어야 합니다.");
+        }
+        this.price = newPrice;
+    }
+
+    /**
+     * 메뉴 판매를 시작합니다.
+     */
+    public void activate() {
+        this.menuStatus = true;
+    }
+
+    /**
+     * 메뉴 판매를 중지합니다.
+     */
+    public void deactivate() {
+        this.menuStatus = false;
+    }
+
+    /**
+     * 메뉴 판매 상태를 토글합니다.
+     */
+    public void toggleStatus() {
+        this.menuStatus = !Boolean.TRUE.equals(this.menuStatus);
+    }
+
+    /**
+     * 메뉴가 판매 중인지 확인합니다.
+     */
+    public boolean isAvailable() {
+        return Boolean.TRUE.equals(this.menuStatus);
     }
 }
+
