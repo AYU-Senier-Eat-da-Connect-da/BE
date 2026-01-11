@@ -16,7 +16,7 @@ public class TeamService {
     private final TeamRepository teamRepository;
 
     // 1. N+1 문제 발생 코드
-    public List<String> findAllTeamMemberNicknames() {
+    public List<String> findAllTeamMemberNicknames_basic() {
         List<String> nicknames = new ArrayList<>();
 
         // 1. 모든 팀 조회 : 1번 쿼리 발생
@@ -56,6 +56,21 @@ public class TeamService {
 
         // 1. 쿼리 1번으로 Team + Member 한 번에 조회
         List<Team> teams = teamRepository.findAllWithOuterFetchJoin();
+
+        for(Team team : teams){
+            for(Member member : team.getMemberList()){
+                nicknames.add(member.getNickname());
+            }
+        }
+
+        return nicknames;
+    }
+
+    // 4. Entity Graph
+    public List<String> findAllTeamMemberNicknames_EntityGraph(){
+        List<String> nicknames = new ArrayList<>();
+
+        List<Team> teams = teamRepository.findAllWithEntityGraph();
 
         for(Team team : teams){
             for(Member member : team.getMemberList()){

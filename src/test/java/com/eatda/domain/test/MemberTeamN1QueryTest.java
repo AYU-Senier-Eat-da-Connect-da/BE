@@ -69,7 +69,7 @@ class MemberTeamN1QueryTest {
     void findAllTeam(){
         System.out.println("==========N+1 문제 발생 테스트==========");
 
-        List<String> nicknames = teamService.findAllTeamMemberNicknames();
+        List<String> nicknames = teamService.findAllTeamMemberNicknames_basic();
 
         System.out.println("조회된 멤버 수 : " + nicknames.size());
     }
@@ -121,5 +121,45 @@ class MemberTeamN1QueryTest {
 
     }
 
+    @Test
+    @DisplayName("EntityGraph 사용")
+    void testEntityGraph(){
+        System.out.println("==========EntityGraph 테스트==========");
+
+        // 결과 : select t1_0.id,ml1_0.team_id,ml1_0.id,ml1_0.nickname,t1_0.team_name from team t1_0 left join member ml1_0 on t1_0.id=ml1_0.team_id
+        List<String> nicknames = teamService.findAllTeamMemberNicknames_EntityGraph();
+    }
+
+    @Test
+    @DisplayName("Batch Fetching으로 조회")
+    void testBatchFetching(){
+        System.out.println("==========Batch Fetching 테스트==========");
+
+        /**
+         * team = 3팀
+         *
+         * batchsize = 5
+         * select t1_0.id,t1_0.team_name from team t1_0
+         * select ml1_0.team_id,ml1_0.id,ml1_0.nickname from member ml1_0 where ml1_0.team_id in (?,?,?,?,?)
+         *
+         * batchsize = 2
+         * select t1_0.id,t1_0.team_name from team t1_0
+         * select ml1_0.team_id,ml1_0.id,ml1_0.nickname from member ml1_0 where ml1_0.team_id in (?,?)
+         * select ml1_0.team_id,ml1_0.id,ml1_0.nickname from member ml1_0 where ml1_0.team_id=?
+         */
+        List<Team> teams = teamRepository.findAll();
+    }
+
+    @Test
+    @DisplayName("Subselect Fetching으로 조회")
+    void testSubselectFetching(){
+        System.out.println("==========Subselect Fetching 테스트==========");
+
+        /**
+         * select t1_0.id,t1_0.team_name from team t1_0
+         * select ml1_0.team_id,ml1_0.id,ml1_0.nickname from member ml1_0 where ml1_0.team_id in (select t1_0.id from team t1_0)
+         */
+        List<Team> teams = teamRepository.findAll();
+    }
 
 }
