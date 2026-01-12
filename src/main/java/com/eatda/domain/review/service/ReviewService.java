@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -57,7 +58,23 @@ public class ReviewService {
 
     public List<ReviewResponseDTO> getReviewListByRestaurantId(Long restaurantId) {
         List<Review> reviewList = reviewRepository.findByRestaurantId(restaurantId);
-        return ReviewResponseDTO.from(reviewList);
+
+        List<ReviewResponseDTO> responses = new ArrayList<>();
+
+        for(Review review : reviewList){
+            ReviewResponseDTO dto = ReviewResponseDTO.builder()
+                    .id(review.getId())
+                    .review_star(review.getReview_star())
+                    .review_body(review.getReview_body())
+                    .childId(review.getChild().getId())
+                    .restaurantId(review.getRestaurant().getId())
+                    .createdAt(review.getCreatedAt())
+                    .build();
+
+            responses.add(dto);
+        }
+
+        return responses;
     }
 
     public List<ReviewResponseDTO> getReviewListByPresidentId(Long presidentId) {

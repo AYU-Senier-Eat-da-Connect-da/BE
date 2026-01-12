@@ -81,11 +81,14 @@ public class OrderService {
         return OrderResponseDTO.from(order);
     }
 
+    // N+1 발생 지점
     public List<OrderResponseDTO> getOrdersByChildId(Long childId) {
         List<Order> orders = orderRepository.findByChildId(childId);
+
         if (orders.isEmpty()) {
             throw new CustomException(ErrorCode.ORDER_NOT_FOUND);
         }
+
         return OrderResponseDTO.from(orders);
     }
 
