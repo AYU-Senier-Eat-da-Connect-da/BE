@@ -21,44 +21,27 @@ public class SponsorController {
 
     @GetMapping("/all")
     public ResponseEntity<List<ChildDTO>> getAllChildren() {
-        List<ChildDTO> children = childService.getAllchildren();
-        if (children != null) {
-            return new ResponseEntity<>(children, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(childService.getAllchildren());
     }
 
     @GetMapping("/{childId}")
     public ResponseEntity<ChildDTO> getChild(@PathVariable Long childId) {
-        ChildDTO child = childService.getChildById(childId);
-        if (child != null) {
-            return new ResponseEntity<>(child, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(childService.getChildById(childId));
     }
 
     @GetMapping("/{sponsorId}/children")
     public ResponseEntity<List<ChildDTO>> findChild(@PathVariable Long sponsorId) {
-        List<ChildDTO> children = sponsorService.getChildrenBySponsorId(sponsorId);
-        return ResponseEntity.ok(children);
+        return ResponseEntity.ok(sponsorService.getChildrenBySponsorId(sponsorId));
     }
 
     @PostMapping("/{sponsorId}/add/{childId}")
     public ResponseEntity<SponsorDTO> addChildToSponsor(@PathVariable Long sponsorId, @PathVariable Long childId) {
-        SponsorDTO sponsorDTO = sponsorService.addChildToSponsor(sponsorId, childId);
-        return new ResponseEntity<>(sponsorDTO, HttpStatus.OK);
+        return ResponseEntity.ok(sponsorService.addChildToSponsor(sponsorId, childId));
     }
 
     @DeleteMapping("/{sponsorId}/delete/{childId}")
     public ResponseEntity<SponsorDTO> deleteChildFromSponsor(@PathVariable Long sponsorId, @PathVariable Long childId) {
-        SponsorDTO sponsorDTO = sponsorService.removeChildFromSponsor(sponsorId, childId);
-        if (sponsorDTO != null) {
-            return new ResponseEntity<>(sponsorDTO, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(sponsorService.removeChildFromSponsor(sponsorId, childId));
     }
 
     @GetMapping("/update-amount/{sponsorId}")
@@ -69,11 +52,6 @@ public class SponsorController {
 
     @GetMapping("/get/{sponsorId}")
     public ResponseEntity<SponsorDTO> getMyInformation(@PathVariable Long sponsorId) {
-        SponsorDTO sponsorDTO = sponsorService.getSponsorInfo(sponsorId);
-        if (sponsorDTO != null) {
-            return new ResponseEntity<>(sponsorDTO, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(sponsorService.getSponsorInfo(sponsorId));
     }
 }

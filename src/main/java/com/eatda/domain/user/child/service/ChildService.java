@@ -11,9 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,53 +21,31 @@ public class ChildService {
 
     public List<ChildDTO> getAllchildren() {
         List<Child> children = childRepository.findAll();
-        List<ChildDTO> childrenDTO = new ArrayList<>();
-
-        for (Child child : children) {
-            childrenDTO.add(ChildDTO.toEntity(child));
-        }
-
-        return childrenDTO;
+        return ChildDTO.from(children);
     }
 
     public ChildDTO getChildById(Long childId) {
-        Optional<Child> childOptional = childRepository.findById(childId);
-
-        if (childOptional.isPresent()) {
-            Child child = childOptional.get();
-            return ChildDTO.toEntity(child);
-        }
-
-        return null;
+        Child child = childRepository.findById(childId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHILD_NOT_FOUND));
+        return ChildDTO.from(child);
     }
 
     public SponsorDTO findSponsorForChild(Long childId) {
-        Optional<Child> childOptional = childRepository.findById(childId);
+        Child child = childRepository.findById(childId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHILD_NOT_FOUND));
 
-        if (childOptional.isPresent()) {
-            Child child = childOptional.get();
-            Sponsor sponsor = child.getSponsor();
-
-            if (sponsor != null) {
-                return SponsorDTO.toEntity(sponsor);
-            }
+        Sponsor sponsor = child.getSponsor();
+        if (sponsor == null) {
+            throw new CustomException(ErrorCode.SPONSOR_NOT_FOUND);
         }
 
-        return null;
+        return SponsorDTO.from(sponsor);
     }
 
     public ChildDTO getChildInfo(Long childId) {
         Child child = childRepository.findById(childId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHILD_NOT_FOUND));
-
-        return ChildDTO.builder()
-                .id(child.getId())
-                .childName(child.getChildName())
-                .childNumber(child.getChildNumber())
-                .childEmail(child.getChildEmail())
-                .childAddress(child.getChildAddress())
-                .childAmount(child.getChildAmount())
-                .build();
+        return ChildDTO.from(child);
     }
 
     @Transactional
@@ -77,9 +53,6 @@ public class ChildService {
         Child child = childRepository.findById(childId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHILD_NOT_FOUND));
 
-        // DDD: 도메인 메서드를 통한 금액 추가
         child.receiveSupport(amount);
     }
 }
-
-

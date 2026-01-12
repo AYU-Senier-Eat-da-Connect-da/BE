@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -22,18 +25,15 @@ public class SponsorDTO {
     private String fcmToken;
     private ChildDTO child;
 
-    public static SponsorDTO toEntity(Sponsor sponsor) {
+    /**
+     * Sponsor Entity -> SponsorDTO 변환
+     */
+    public static SponsorDTO from(Sponsor sponsor) {
         Child child = sponsor.getChild();
         ChildDTO childDTO = null;
 
         if (child != null) {
-            childDTO = ChildDTO.builder()
-                    .id(child.getId())
-                    .childName(child.getChildName())
-                    .childEmail(child.getChildEmail())
-                    .childNumber(child.getChildNumber())
-                    .childAddress(child.getChildAddress())
-                    .build();
+            childDTO = ChildDTO.from(child);
         }
 
         return SponsorDTO.builder()
@@ -41,9 +41,28 @@ public class SponsorDTO {
                 .sponsorName(sponsor.getSponsorName())
                 .sponsorEmail(sponsor.getSponsorEmail())
                 .sponsorAddress(sponsor.getSponsorAddress())
-                .sponsorNumber(sponsor.getSponsorAddress())
+                .sponsorNumber(sponsor.getSponsorNumber())
                 .sponsorAmount(sponsor.getSponsorAmount())
                 .child(childDTO)
                 .build();
+    }
+
+    /**
+     * List<Sponsor> -> List<SponsorDTO> 변환
+     */
+    public static List<SponsorDTO> from(List<Sponsor> sponsors) {
+        List<SponsorDTO> result = new ArrayList<>();
+        for (Sponsor sponsor : sponsors) {
+            result.add(from(sponsor));
+        }
+        return result;
+    }
+
+    /**
+     * @deprecated Use {@link #from(Sponsor)} instead
+     */
+    @Deprecated
+    public static SponsorDTO toEntity(Sponsor sponsor) {
+        return from(sponsor);
     }
 }

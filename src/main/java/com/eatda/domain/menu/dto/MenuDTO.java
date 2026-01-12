@@ -3,6 +3,9 @@ package com.eatda.domain.menu.dto;
 import com.eatda.domain.menu.entity.Menu;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -24,13 +27,35 @@ public class MenuDTO {
         this.menuStatus = menuStatus;
     }
 
-    public static MenuDTO toEntity(Menu menuEntity) {
+    /**
+     * Menu Entity -> MenuDTO 변환
+     */
+    public static MenuDTO from(Menu menu) {
         return MenuDTO.builder()
-                .id(menuEntity.getId())
-                .menuName(menuEntity.getMenuName())
-                .menuStatus(menuEntity.getMenuStatus())
-                .menuBody(menuEntity.getMenuBody())
-                .price(menuEntity.getPrice())
+                .id(menu.getId())
+                .menuName(menu.getMenuName())
+                .menuStatus(menu.getMenuStatus())
+                .menuBody(menu.getMenuBody())
+                .price(menu.getPrice())
                 .build();
+    }
+
+    /**
+     * List<Menu> -> List<MenuDTO> 변환
+     */
+    public static List<MenuDTO> from(List<Menu> menus) {
+        List<MenuDTO> result = new ArrayList<>();
+        for (Menu menu : menus) {
+            result.add(from(menu));
+        }
+        return result;
+    }
+
+    /**
+     * @deprecated Use {@link #from(Menu)} instead
+     */
+    @Deprecated
+    public static MenuDTO toEntity(Menu menuEntity) {
+        return from(menuEntity);
     }
 }

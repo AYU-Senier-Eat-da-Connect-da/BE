@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,36 +23,25 @@ public class MenuService {
     public MenuDTO getMenuById(Long menuId) {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND));
-
-        return MenuDTO.builder()
-                .id(menu.getId())
-                .menuName(menu.getMenuName())
-                .menuBody(menu.getMenuBody())
-                .menuStatus(menu.getMenuStatus())
-                .price(menu.getPrice())
-                .build();
+        return MenuDTO.from(menu);
     }
 
     @Transactional
     public MenuDTO createMenu(MenuDTO menuDTO, Long presidentId) {
-        Optional<Restaurant> restaurantEntityOptional = restaurantRepository.findFirstByPresidentId(presidentId);
+        Restaurant restaurant = restaurantRepository.findFirstByPresidentId(presidentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
 
-        if (restaurantEntityOptional.isPresent()) {
-            Restaurant restaurant = restaurantEntityOptional.get();
+        Menu menu = Menu.builder()
+                .menuName(menuDTO.getMenuName())
+                .menuBody(menuDTO.getMenuBody())
+                .menuStatus(menuDTO.isMenuStatus())
+                .price(menuDTO.getPrice())
+                .restaurant(restaurant)
+                .build();
 
-            Menu menu = Menu.builder()
-                    .menuName(menuDTO.getMenuName())
-                    .menuBody(menuDTO.getMenuBody())
-                    .menuStatus(menuDTO.isMenuStatus())
-                    .price(menuDTO.getPrice())
-                    .restaurant(restaurant)
-                    .build();
+        menuRepository.save(menu);
 
-            menuRepository.save(menu);
-
-            return MenuDTO.toEntity(menu);
-        }
-        return null;
+        return MenuDTO.from(menu);
     }
 
     @Transactional
@@ -62,10 +49,9 @@ public class MenuService {
         Menu menu = menuRepository.findById(menuDTO.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND));
 
-        // DDD: 도메인 메서드를 통한 정보 수정
         menu.updateInfo(menuDTO.getMenuName(), menuDTO.getMenuBody(), menuDTO.isMenuStatus(), menuDTO.getPrice());
 
-        return MenuDTO.toEntity(menu);
+        return MenuDTO.from(menu);
     }
 
     @Transactional
@@ -77,12 +63,6 @@ public class MenuService {
 
     public List<MenuDTO> getMenusByPresidentId(Long presidentId) {
         List<Menu> menus = menuRepository.findByPresidentId(presidentId);
-        return menus.stream().map(menu -> new MenuDTO(
-                menu.getId(),
-                menu.getMenuName(),
-                menu.getMenuBody(),
-                menu.getPrice(),
-                menu.getMenuStatus()
-        )).collect(Collectors.toList());
+        return MenuDTO.from(menus);
     }
 }

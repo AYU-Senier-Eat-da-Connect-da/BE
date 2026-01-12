@@ -16,39 +16,23 @@ public class MenuController {
 
     @GetMapping("/{menuId}")
     public ResponseEntity<MenuDTO> getMenuById(@PathVariable Long menuId) {
-        MenuDTO menuDTO = menuService.getMenuById(menuId);
-        if (menuDTO != null) {
-            return ResponseEntity.ok(menuDTO);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(menuService.getMenuById(menuId));
     }
 
     @PostMapping("/create/{presidentId}")
     public ResponseEntity<MenuDTO> createMenu(@RequestBody MenuDTO menuDTO, @PathVariable Long presidentId) {
-        MenuDTO createdMenu = menuService.createMenu(menuDTO, presidentId);
-
-        if (createdMenu != null) {
-            return new ResponseEntity<>(createdMenu, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(menuService.createMenu(menuDTO, presidentId), HttpStatus.CREATED);
     }
 
     @PutMapping("/{menuId}/update")
     public ResponseEntity<MenuDTO> updateMenu(@PathVariable Long menuId, @RequestBody MenuDTO menuDTO) {
         menuDTO.setId(menuId);
-        MenuDTO updatedMenu = menuService.updateMenu(menuDTO);
-        if (updatedMenu != null) {
-            return ResponseEntity.ok(updatedMenu);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(menuService.updateMenu(menuDTO));
     }
 
     @DeleteMapping("/{menuId}")
     public ResponseEntity<String> deleteMenu(@PathVariable Long menuId) {
         menuService.deleteMenu(menuId);
-        return new ResponseEntity<>("삭제 완료", HttpStatus.OK);
+        return ResponseEntity.ok("삭제 완료");
     }
 }

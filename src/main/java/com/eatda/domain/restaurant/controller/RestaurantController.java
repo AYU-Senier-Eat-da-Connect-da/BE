@@ -16,31 +16,22 @@ public class RestaurantController {
 
     @GetMapping("/{restaurantId}")
     public ResponseEntity<RestaurantDTO> getRestaurantByPresidentId(@PathVariable Long restaurantId) {
-        RestaurantDTO restaurantDTO = restaurantService.getRestaurantById(restaurantId);
-        if (restaurantDTO != null) {
-            return ResponseEntity.ok(restaurantDTO);
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(restaurantService.getRestaurantById(restaurantId));
     }
 
     @PostMapping("/create")
     public ResponseEntity<RestaurantDTO> createRestaurant(@RequestBody RestaurantDTO restaurantDTO) {
-        RestaurantDTO createRestaurant = restaurantService.createRestaurant(restaurantDTO);
-        if (createRestaurant != null) {
-            return ResponseEntity.ok(createRestaurant);
-        }
-        return ResponseEntity.badRequest().build();
+        return new ResponseEntity<>(restaurantService.createRestaurant(restaurantDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/{restaurantId}/update")
     public ResponseEntity<RestaurantDTO> updateRestaurant(@PathVariable Long restaurantId, @RequestBody RestaurantDTO restaurantDTO) {
-        RestaurantDTO updatedRestaurant = restaurantService.updateRestaurant(restaurantId, restaurantDTO);
-        return ResponseEntity.ok(updatedRestaurant);
+        return ResponseEntity.ok(restaurantService.updateRestaurant(restaurantId, restaurantDTO));
     }
 
     @DeleteMapping("/{restaurantId}")
     public ResponseEntity<String> deleteRestaurant(@PathVariable Long restaurantId) {
         restaurantService.deleteRestaurant(restaurantId);
-        return new ResponseEntity<>("삭제 완료", HttpStatus.OK);
+        return ResponseEntity.ok("삭제 완료");
     }
 }

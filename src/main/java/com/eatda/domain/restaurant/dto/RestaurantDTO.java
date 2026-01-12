@@ -1,11 +1,13 @@
 package com.eatda.domain.restaurant.dto;
 
 import com.eatda.domain.menu.dto.MenuDTO;
+import com.eatda.domain.menu.entity.Menu;
 import com.eatda.domain.restaurant.entity.Restaurant;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -51,15 +53,53 @@ public class RestaurantDTO {
         this.menus = menus;
     }
 
-    public static RestaurantDTO toEntity(Restaurant restaurantEntity) {
+    /**
+     * Restaurant Entity -> RestaurantDTO 변환 (메뉴 미포함)
+     */
+    public static RestaurantDTO from(Restaurant restaurant) {
         return RestaurantDTO.builder()
-                .id(restaurantEntity.getId())
-                .restaurantName(restaurantEntity.getRestaurantName())
-                .restaurantAddress(restaurantEntity.getRestaurantAddress())
-                .restaurantNumber(restaurantEntity.getRestaurantNumber())
-                .restaurantBody(restaurantEntity.getRestaurantBody())
-                .restaurantCategory(restaurantEntity.getRestaurantCategory())
-                .presidentId(restaurantEntity.getId())
+                .id(restaurant.getId())
+                .restaurantName(restaurant.getRestaurantName())
+                .restaurantAddress(restaurant.getRestaurantAddress())
+                .restaurantNumber(restaurant.getRestaurantNumber())
+                .restaurantBody(restaurant.getRestaurantBody())
+                .restaurantCategory(restaurant.getRestaurantCategory())
+                .presidentId(restaurant.getPresident().getId())
                 .build();
+    }
+
+    /**
+     * Restaurant Entity -> RestaurantDTO 변환 (메뉴 포함)
+     */
+    public static RestaurantDTO fromWithMenus(Restaurant restaurant, List<Menu> menus) {
+        return RestaurantDTO.builder()
+                .id(restaurant.getId())
+                .restaurantName(restaurant.getRestaurantName())
+                .restaurantAddress(restaurant.getRestaurantAddress())
+                .restaurantNumber(restaurant.getRestaurantNumber())
+                .restaurantBody(restaurant.getRestaurantBody())
+                .restaurantCategory(restaurant.getRestaurantCategory())
+                .presidentId(restaurant.getPresident().getId())
+                .menus(MenuDTO.from(menus))
+                .build();
+    }
+
+    /**
+     * List<Restaurant> -> List<RestaurantDTO> 변환
+     */
+    public static List<RestaurantDTO> from(List<Restaurant> restaurants) {
+        List<RestaurantDTO> result = new ArrayList<>();
+        for (Restaurant restaurant : restaurants) {
+            result.add(from(restaurant));
+        }
+        return result;
+    }
+
+    /**
+     * @deprecated Use {@link #from(Restaurant)} instead
+     */
+    @Deprecated
+    public static RestaurantDTO toEntity(Restaurant restaurantEntity) {
+        return from(restaurantEntity);
     }
 }
