@@ -4,6 +4,7 @@ import com.eatda.domain.review.dto.ReviewRequestDTO;
 import com.eatda.domain.review.dto.ReviewResponseDTO;
 import com.eatda.domain.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,35 +22,26 @@ public class ReviewController {
             @PathVariable Long restaurantId,
             @RequestBody ReviewRequestDTO reviewRequestDto,
             @RequestParam Long childId) {
-        ReviewResponseDTO addedReview = reviewService.createReview(restaurantId, reviewRequestDto, childId);
-        if (addedReview != null) {
-            return ResponseEntity.ok(addedReview);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return new ResponseEntity<>(reviewService.createReview(restaurantId, reviewRequestDto, childId), HttpStatus.CREATED);
     }
 
     @GetMapping("/child/{childId}")
     public ResponseEntity<List<ReviewResponseDTO>> getReviewListByChildId(@PathVariable Long childId) {
-        List<ReviewResponseDTO> reviews = reviewService.getReviewLIstByChildId(childId);
-        return ResponseEntity.ok(reviews);
+        return ResponseEntity.ok(reviewService.getReviewLIstByChildId(childId));
     }
 
     @GetMapping("/{reviewId}")
     public ResponseEntity<ReviewResponseDTO> getReviewById(@PathVariable Long reviewId) {
-        ReviewResponseDTO review = reviewService.getReviewById(reviewId);
-        return ResponseEntity.ok(review);
+        return ResponseEntity.ok(reviewService.getReviewById(reviewId));
     }
 
     @GetMapping("/restaurant/{restaurantId}")
     public ResponseEntity<List<ReviewResponseDTO>> getReviewsByRestaurantId(@PathVariable Long restaurantId) {
-        List<ReviewResponseDTO> reviews = reviewService.getReviewListByRestaurantId(restaurantId);
-        return ResponseEntity.ok(reviews);
+        return ResponseEntity.ok(reviewService.getReviewListByRestaurantId(restaurantId));
     }
 
     @GetMapping("/president/{presidentId}")
     public ResponseEntity<List<ReviewResponseDTO>> getReviewsByPresidentId(@PathVariable Long presidentId) {
-        List<ReviewResponseDTO> reviews = reviewService.getReviewListByPresidentId(presidentId);
-        return ResponseEntity.ok(reviews);
+        return ResponseEntity.ok(reviewService.getReviewListByPresidentId(presidentId));
     }
 }

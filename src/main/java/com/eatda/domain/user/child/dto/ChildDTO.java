@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -18,7 +21,10 @@ public class ChildDTO {
     private String childAddress;
     private int childAmount;
 
-    public static ChildDTO toEntity(Child child) {
+    /**
+     * Child Entity -> ChildDTO 변환
+     */
+    public static ChildDTO from(Child child) {
         return ChildDTO.builder()
                 .id(child.getId())
                 .childName(child.getChildName())
@@ -27,5 +33,24 @@ public class ChildDTO {
                 .childAddress(child.getChildAddress())
                 .childAmount(child.getChildAmount())
                 .build();
+    }
+
+    /**
+     * List<Child> -> List<ChildDTO> 변환
+     */
+    public static List<ChildDTO> from(List<Child> children) {
+        List<ChildDTO> result = new ArrayList<>();
+        for (Child child : children) {
+            result.add(from(child));
+        }
+        return result;
+    }
+
+    /**
+     * @deprecated Use {@link #from(Child)} instead
+     */
+    @Deprecated
+    public static ChildDTO toEntity(Child child) {
+        return from(child);
     }
 }

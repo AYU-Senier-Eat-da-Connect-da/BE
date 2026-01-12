@@ -16,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,60 +27,44 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDTO createReview(Long restaurantId, ReviewRequestDTO reviewRequestDTO, Long childId) {
-        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
-        Optional<Child> childOptional = childRepository.findById(childId);
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
+        Child child = childRepository.findById(childId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHILD_NOT_FOUND));
 
-        if (restaurantOptional.isPresent() && childOptional.isPresent()) {
-            Restaurant restaurant = restaurantOptional.get();
-            Child child = childOptional.get();
+        Review review = Review.builder()
+                .review_star(reviewRequestDTO.getReview_star())
+                .review_body(reviewRequestDTO.getReview_body())
+                .restaurant(restaurant)
+                .child(child)
+                .createdAt(LocalDateTime.now())
+                .build();
 
-            Review review = Review.builder()
-                    .review_star(reviewRequestDTO.getReview_star())
-                    .review_body(reviewRequestDTO.getReview_body())
-                    .restaurant(restaurant)
-                    .child(child)
-                    .createdAt(LocalDateTime.now())
-                    .build();
-
-            reviewRepository.save(review);
-            return ReviewResponseDTO.toEntity(review);
-        }
-        return null;
+        reviewRepository.save(review);
+        return ReviewResponseDTO.from(review);
     }
 
     public List<ReviewResponseDTO> getReviewLIstByChildId(Long childId) {
         List<Review> reviewList = reviewRepository.findByChildId(childId);
-        return reviewList.stream()
-                .map(ReviewResponseDTO::toEntity)
-                .collect(Collectors.toList());
+        return ReviewResponseDTO.from(reviewList);
     }
 
     public ReviewResponseDTO getReviewById(Long reviewId) {
-        Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
-        if (reviewOptional.isPresent()) {
-            return ReviewResponseDTO.toEntity(reviewOptional.get());
-        }
-        throw new CustomException(ErrorCode.REVIEW_NOT_FOUND);
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+        return ReviewResponseDTO.from(review);
     }
 
     public List<ReviewResponseDTO> getReviewListByRestaurantId(Long restaurantId) {
         List<Review> reviewList = reviewRepository.findByRestaurantId(restaurantId);
-        return reviewList.stream()
-                .map(ReviewResponseDTO::toEntity)
-                .collect(Collectors.toList());
+        return ReviewResponseDTO.from(reviewList);
     }
 
     public List<ReviewResponseDTO> getReviewListByPresidentId(Long presidentId) {
-        Optional<Restaurant> restaurantOptional = restaurantRepository.findFirstByPresidentId(presidentId);
+        Restaurant restaurant = restaurantRepository.findFirstByPresidentId(presidentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
 
-        if (restaurantOptional.isPresent()) {
-            Long restaurantId = restaurantOptional.get().getId();
-            List<Review> reviewList = reviewRepository.findByRestaurantId(restaurantId);
-
-            return reviewList.stream()
-                    .map(ReviewResponseDTO::toEntity)
-                    .collect(Collectors.toList());
-        }
-        throw new CustomException(ErrorCode.RESTAURANT_NOT_FOUND);
+        List<Review> reviewList = reviewRepository.findByRestaurantId(restaurant.getId());
+        return ReviewResponseDTO.from(reviewList);
     }
 }

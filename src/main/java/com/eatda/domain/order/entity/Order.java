@@ -33,6 +33,17 @@ public class Order {
     @JoinColumn(name = "child_id")
     private Child child;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MenuOrder> menuOrders;
+
+    /**
+     * 주문의 총 가격을 계산합니다.
+     */
+    public int calculateTotalPrice() {
+        int total = 0;
+        for (MenuOrder menuOrder : menuOrders) {
+            total += menuOrder.getMenu().getPrice() * menuOrder.getMenuCount();
+        }
+        return total;
+    }
 }

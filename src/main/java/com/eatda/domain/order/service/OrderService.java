@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -69,67 +67,18 @@ public class OrderService {
 
         orderRepository.save(order);
 
-        // 응답 생성
-        int totalPrice = order.getMenuOrders().stream()
-                .mapToInt(menuOrder -> menuOrder.getMenu().getPrice() * menuOrder.getMenuCount())
-                .sum();
-
-        return OrderResponseDTO.builder()
-                .id(order.getId())
-                .restaurantId(restaurant.getId())
-                .childId(child.getId())
-                .menuOrders(order.getMenuOrders().stream()
-                        .map(menuOrder -> OrderResponseDTO.MenuOrder.builder()
-                                .menuId(menuOrder.getMenu().getId())
-                                .menuCount(menuOrder.getMenuCount())
-                                .build())
-                        .collect(Collectors.toList()))
-                .orderTime(order.getOrderTime())
-                .price(totalPrice)
-                .build();
+        return OrderResponseDTO.from(order);
     }
 
     public List<OrderResponseDTO> getOrderListByRestaurantId(Long restaurantId) {
         List<Order> orderList = orderRepository.findByRestaurantId(restaurantId);
-
-        return orderList.stream()
-                .map(order -> OrderResponseDTO.builder()
-                        .id(order.getId())
-                        .restaurantId(order.getRestaurant().getId())
-                        .childId(order.getChild().getId())
-                        .menuOrders(order.getMenuOrders().stream()
-                                .map(menuOrder -> OrderResponseDTO.MenuOrder.builder()
-                                        .menuId(menuOrder.getMenu().getId())
-                                        .menuCount(menuOrder.getMenuCount())
-                                        .build())
-                                .collect(Collectors.toList()))
-                        .orderTime(order.getOrderTime())
-                        .price(order.getMenuOrders().stream()
-                                .mapToInt(menuOrder -> menuOrder.getMenu().getPrice() * menuOrder.getMenuCount())
-                                .sum())
-                        .build())
-                .collect(Collectors.toList());
+        return OrderResponseDTO.from(orderList);
     }
 
     public OrderResponseDTO getOrderByOrderId(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
-
-        return OrderResponseDTO.builder()
-                .id(order.getId())
-                .restaurantId(order.getRestaurant().getId())
-                .childId(order.getChild().getId())
-                .menuOrders(order.getMenuOrders().stream()
-                        .map(menuOrder -> OrderResponseDTO.MenuOrder.builder()
-                                .menuId(menuOrder.getMenu().getId())
-                                .menuCount(menuOrder.getMenuCount())
-                                .build())
-                        .collect(Collectors.toList()))
-                .orderTime(order.getOrderTime())
-                .price(order.getMenuOrders().stream()
-                        .mapToInt(menuOrder -> menuOrder.getMenu().getPrice() * menuOrder.getMenuCount())
-                        .sum())
-                .build();
+        return OrderResponseDTO.from(order);
     }
 
     public List<OrderResponseDTO> getOrdersByChildId(Long childId) {
@@ -137,27 +86,7 @@ public class OrderService {
         if (orders.isEmpty()) {
             throw new CustomException(ErrorCode.ORDER_NOT_FOUND);
         }
-
-        return orders.stream()
-                .map(order -> OrderResponseDTO.builder()
-                        .id(order.getId())
-                        .restaurantId(order.getRestaurant().getId())
-                        .restaurantName(order.getRestaurant().getRestaurantName())
-                        .childId(order.getChild().getId())
-                        .menuOrders(order.getMenuOrders().stream()
-                                .map(menuOrder -> OrderResponseDTO.MenuOrder.builder()
-                                        .menuId(menuOrder.getMenu().getId())
-                                        .menuName(menuOrder.getMenu().getMenuName())
-                                        .menuBody(menuOrder.getMenu().getMenuBody())
-                                        .menuCount(menuOrder.getMenuCount())
-                                        .build())
-                                .collect(Collectors.toList()))
-                        .orderTime(order.getOrderTime())
-                        .price(order.getMenuOrders().stream()
-                                .mapToInt(menuOrder -> menuOrder.getMenu().getPrice() * menuOrder.getMenuCount())
-                                .sum())
-                        .build())
-                .collect(Collectors.toList());
+        return OrderResponseDTO.from(orders);
     }
 
     public List<OrderResponseDTO> getOrderListByPresidentId(Long presidentId) {
@@ -171,33 +100,6 @@ public class OrderService {
         Long restaurantId = restaurant.getId();
 
         List<Order> orderList = orderRepository.findByRestaurantId(restaurantId);
-
-        return orderList.stream()
-                .map(order -> OrderResponseDTO.builder()
-                        .id(order.getId())
-                        .restaurantId(order.getRestaurant().getId())
-                        .restaurantName(order.getRestaurant().getRestaurantName())
-                        .childId(order.getChild().getId())
-                        .child(OrderResponseDTO.Child.builder()
-                                .id(order.getChild().getId())
-                                .name(order.getChild().getChildName())
-                                .email(order.getChild().getChildEmail())
-                                .phone(order.getChild().getChildNumber())
-                                .address(order.getChild().getChildAddress())
-                                .build())
-                        .menuOrders(order.getMenuOrders().stream()
-                                .map(menuOrder -> OrderResponseDTO.MenuOrder.builder()
-                                        .menuId(menuOrder.getMenu().getId())
-                                        .menuCount(menuOrder.getMenuCount())
-                                        .menuName(menuOrder.getMenu().getMenuName())
-                                        .menuBody(menuOrder.getMenu().getMenuBody())
-                                        .build())
-                                .collect(Collectors.toList()))
-                        .orderTime(order.getOrderTime())
-                        .price(order.getMenuOrders().stream()
-                                .mapToInt(menuOrder -> menuOrder.getMenu().getPrice() * menuOrder.getMenuCount())
-                                .sum())
-                        .build())
-                .collect(Collectors.toList());
+        return OrderResponseDTO.fromWithChild(orderList);
     }
 }
