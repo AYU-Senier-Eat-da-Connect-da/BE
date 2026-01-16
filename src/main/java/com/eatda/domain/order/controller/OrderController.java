@@ -15,10 +15,20 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final com.eatda.domain.order.service.OptimisticLockOrderFacade optimisticLockOrderFacade;
 
     @PostMapping
     public ResponseEntity<OrderResponseDTO> addOrder(@RequestBody OrderRequestDTO orderRequestDTO) {
+        // 기본적으로 createOrder(Pessimistic 혹은 Synchronized) 호출
         OrderResponseDTO addedOrder = orderService.createOrder(orderRequestDTO);
+        return ResponseEntity.ok(addedOrder);
+    }
+
+    // 낙관적 락 테스트를 위한 전용 엔드포인트
+    @PostMapping("/optimistic")
+    public ResponseEntity<OrderResponseDTO> addOrderWithOptimistic(@RequestBody OrderRequestDTO orderRequestDTO) throws InterruptedException {
+        // Facade를 통해 재시도 로직이 포함된 낙관적 락 호출
+        OrderResponseDTO addedOrder = optimisticLockOrderFacade.createOrder(orderRequestDTO);
         return ResponseEntity.ok(addedOrder);
     }
 
